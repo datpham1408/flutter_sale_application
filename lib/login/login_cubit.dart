@@ -1,13 +1,17 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sale_application/entity/user_entity.dart';
 import 'package:flutter_sale_application/login/login_state.dart';
 import 'package:flutter_sale_application/resources/hive_key.dart';
 import 'package:hive/hive.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit() : super(LoginState());
+
+  final auth = FirebaseAuth.instance;
 
   void checkEmpty({
     String email = '',
@@ -21,6 +25,29 @@ class LoginCubit extends Cubit<LoginState> {
       emit(LoginCheckIsEmptyPassword());
 
       return;
+    }
+  }
+
+  Future<void> signGoogle() async {
+    final googleUser = await GoogleSignIn().signIn();
+
+    final googleAuth = await googleUser?.authentication;
+
+    if (googleAuth != null) {
+      final credential = GoogleAuthProvider.credential(
+          idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+
+      UserCredential userCredential =
+          await auth.signInWithCredential(credential);
+      User? user = userCredential.user;
+
+      if (user != null) {
+        emit(LoginWithGoogleSuccessState(user: user));
+      } else {
+        emit(LoginWithGoogleErrorState());
+      }
+
+      // user.user?.
     }
   }
 

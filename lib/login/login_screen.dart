@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sale_application/login/login_cubit.dart';
 import 'package:flutter_sale_application/login/login_state.dart';
 import 'package:flutter_sale_application/main.dart';
@@ -34,20 +36,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-      child: BlocProvider<LoginCubit>(
-        create: (_) => _loginCubit,
-        child: BlocConsumer<LoginCubit, LoginState>(
-          listener: (_, LoginState state) {
-            _handleListener(state);
-          },
-          builder: (_, LoginState state) {
-            return itemBody();
-          },
+    return FlutterEasyLoading(
+      child: Scaffold(
+          body: SafeArea(
+        child: BlocProvider<LoginCubit>(
+          create: (_) => _loginCubit,
+          child: BlocConsumer<LoginCubit, LoginState>(
+            listener: (_, LoginState state) {
+              _handleListener(state);
+            },
+            builder: (_, LoginState state) {
+              return itemBody();
+            },
+          ),
         ),
-      ),
-    ));
+      )),
+    );
   }
 
   Widget itemBody() {
@@ -87,7 +91,9 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               itemImages(facebook, () {}),
               Utils.instance.sizeBoxWidth(48),
-              itemImages(google, () {}),
+              itemImages(google, () {
+                _loginCubit.signGoogle();
+              }),
             ],
           )
         ],
@@ -198,11 +204,21 @@ class _LoginScreenState extends State<LoginScreen> {
       handleItemClickHome();
       return;
     }
+    if (state is LoginWithGoogleSuccessState) {
+      var user = state.user;
+      handleItemClickHome(user: user);
+      return;
+    }
+    if (state is LoginWithGoogleErrorState) {
+      Utils.instance.showToast(userWithGoogle);
+      return;
+    }
   }
 
-  void handleItemClickHome() {
+  void handleItemClickHome({User? user}) {
     GoRouter.of(context).pushNamed(
       routerNameHome,
+      extra: {'user': user},
     );
   }
 }

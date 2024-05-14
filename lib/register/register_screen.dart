@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sale_application/register/register_cubit.dart';
 import 'package:flutter_sale_application/register/register_state.dart';
 import 'package:flutter_sale_application/resources/string.dart';
@@ -33,20 +34,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-      child: BlocProvider<RegisterCubit>(
-        create: (_) => _registerCubit,
-        child: BlocConsumer<RegisterCubit, RegisterState>(
-          listener: (_, RegisterState state) {
-            _handleListener(state);
-          },
-          builder: (_, RegisterState state) {
-            return SingleChildScrollView(child: itemBody());
-          },
+    return FlutterEasyLoading(
+      child: Scaffold(
+          body: SafeArea(
+        child: BlocProvider<RegisterCubit>(
+          create: (_) => _registerCubit,
+          child: BlocConsumer<RegisterCubit, RegisterState>(
+            listener: (_, RegisterState state) {
+              _handleListener(state);
+            },
+            builder: (_, RegisterState state) {
+              return SingleChildScrollView(child: itemBody());
+            },
+          ),
         ),
-      ),
-    ));
+      )),
+    );
   }
 
   Widget itemBody() {
