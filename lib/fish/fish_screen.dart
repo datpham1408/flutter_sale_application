@@ -23,28 +23,66 @@ class _FishScreenState extends State<FishScreen> {
   Widget itemBody() {
     return Column(
       children: [
-        itemDetailBody(image: imageFish, title: mackerel),
-        itemDetailBody(image: imageFish, title: herring),
-        itemDetailBody(image: imageFish, title: carp),
-        itemDetailBody(image: imageFish, title: salmon),
-        itemDetailBody(image: imageFish, title: pilchard),
-        itemDetailBody(image: imageFish, title: tuna),
-        itemDetailBody(image: imageFish, title: anchovy),
+        itemDetailBody(
+            image: imageFish,
+            title: mackerel,
+            onTap: () {
+              Utils.instance.showBottomSheet(context:context,image:imageFish,title: mackerel,coast:134.00 );
+            }),
+        itemDetailBody(
+            image: imageFish,
+            title: herring,
+            onTap: () {
+              Utils.instance.showBottomSheet(context:context,image:imageFish,title: herring,coast:100.00 );
+            }),
+        itemDetailBody(
+            image: imageFish,
+            title: carp,
+            onTap: () {
+              Utils.instance.showBottomSheet(context:context,image:imageFish,title: carp,coast:210.93 );
+            }),
+        itemDetailBody(
+            image: imageFish,
+            title: salmon,
+            onTap: () {
+              Utils.instance.showBottomSheet(context:context,image:imageFish,title: salmon,coast:150.74 );
+            }),
+        itemDetailBody(
+            image: imageFish,
+            title: pilchard,
+            onTap: () {
+              Utils.instance.showBottomSheet(context:context,image:imageFish,title: pilchard,coast:90.22 );
+            }),
+        itemDetailBody(
+            image: imageFish,
+            title: tuna,
+            onTap: () {
+              Utils.instance.showBottomSheet(context:context,image:imageFish,title: tuna,coast:190.37 );
+            }),
+        itemDetailBody(
+            image: imageFish,
+            title: anchovy,
+            onTap: () {
+              Utils.instance.showBottomSheet(context:context,image:imageFish,title: anchovy,coast:89.65 );
+            }),
       ],
     );
   }
 
-  Widget itemDetailBody({String? image, String? title}) {
-    return Container(
-      padding: EdgeInsets.all(8),
-      margin: EdgeInsets.all(8),
-      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-      child: Row(
-        children: [
-          Image.asset(image ?? ''),
-          Utils.instance.sizeBoxWidth(20),
-          Text(title ?? '')
-        ],
+  Widget itemDetailBody({String? image, String? title, VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(8),
+        margin: EdgeInsets.all(8),
+        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+        child: Row(
+          children: [
+            Image.asset(image ?? ''),
+            Utils.instance.sizeBoxWidth(20),
+            Text(title ?? '')
+          ],
+        ),
       ),
     );
   }
