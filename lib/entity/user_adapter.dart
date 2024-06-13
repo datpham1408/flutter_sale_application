@@ -12,7 +12,8 @@ class UserAdapter extends TypeAdapter<UserEntity> {
       ..password = reader.readString()
       ..age = reader.readString()
       ..phone = reader.readString()
-      ..fullName = reader.readString();
+      ..fullName = reader.readString()
+      ..selected = reader.readString();
   }
 
   @override
@@ -22,5 +23,6 @@ class UserAdapter extends TypeAdapter<UserEntity> {
     writer.writeString(user.age ?? '');
     writer.writeString(user.phone ?? '');
     writer.writeString(user.fullName ?? '');
+    writer.writeString(user.selected ?? '');
   }
 }

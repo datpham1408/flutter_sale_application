@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sale_application/egg/egg_screen.dart';
-import 'package:flutter_sale_application/fish/fish_screen.dart';
-import 'package:flutter_sale_application/fruit/fruit_screen.dart';
-import 'package:flutter_sale_application/meat/meat_screen.dart';
+import 'package:flutter_sale_application/buy_food/buy_food_screen.dart';
+import 'package:flutter_sale_application/edit_cart/edit_cart.dart';
+import 'package:flutter_sale_application/edit_item/edit_item_screen.dart';
+import 'package:flutter_sale_application/food/detail_food.dart';
+
 import 'package:flutter_sale_application/home_screen.dart';
 import 'package:flutter_sale_application/login/login_screen.dart';
+import 'package:flutter_sale_application/market/market_screen.dart';
 import 'package:flutter_sale_application/register/register_screen.dart';
 import 'package:flutter_sale_application/router/route_constant.dart';
-import 'package:flutter_sale_application/spices/spices_screen.dart';
-import 'package:flutter_sale_application/vegestable/vegestable_screen.dart';
 import 'package:go_router/go_router.dart';
+
+import '../add_item/add_item_screen.dart';
 
 final GoRouter routerMyApp = GoRouter(
   routes: <RouteBase>[
@@ -34,55 +36,61 @@ final GoRouter routerMyApp = GoRouter(
       },
     ),
     GoRoute(
-      path: routerPathMeat,
-      name: routerNameMeat,
+      path: routerPathMarket,
+      name: routerNameMarket,
       builder: (BuildContext context, GoRouterState state) {
-        return const MeatScreen();
+        return const MarketScreen();
       },
     ),
     GoRoute(
-      path: routerPathFish,
-      name: routerNameFish,
+      path: routerPathEditCart,
+      name: routerNameEditCart,
       builder: (BuildContext context, GoRouterState state) {
-        return const FishScreen();
+        return const EditCartScreen();
       },
     ),
     GoRoute(
-      path: routerPathFruit,
-      name: routerNameFruit,
-      builder: (BuildContext context, GoRouterState state) {
-        return const FruitScreen();
-      },
-    ),
+        path: routerPathAddItem,
+        name: routerNameAddItem,
+        builder: (BuildContext context, GoRouterState state) {
+          return const AddItemScreen();
+        }),
     GoRoute(
-      path: routerPathEgg,
-      name: routerNameEgg,
-      builder: (BuildContext context, GoRouterState state) {
-        return const EggScreen();
-      },
-    ),
+        path: routerPathBuyFood,
+        name: routerNameBuyFood,
+        builder: (BuildContext context, GoRouterState state) {
+          return const BuyFoodScreen();
+        }),
     GoRoute(
-      path: routerPathVegetable,
-      name: routerNameVegetable,
-      builder: (BuildContext context, GoRouterState state) {
-        return const VegetableScreen();
-      },
-    ),
-    GoRoute(
-      path: routerPathSpices,
-      name: routerNameSpices,
-      builder: (BuildContext context, GoRouterState state) {
-        return const SpicesScreen();
-      },
-    ),
+        path: routerPathFoodDetail,
+        name: routerNameFoodDetail,
+        builder: (BuildContext context, GoRouterState state) {
+          final dataEntity = (state.extra as Map<String, dynamic>?);
+          final entity = dataEntity?['entity'];
+          final title = dataEntity?['title'];
+          return DetailFoodScreen(
+            entity: entity,
+            title: title ?? '',
+          );
+        }),
     GoRoute(
       path: routerPathHome,
       name: routerNameHome,
       builder: (BuildContext context, GoRouterState state) {
-        final user = (state.extra as Map<String, dynamic>?)?['user'];
+        final userEntity = (state.extra as Map<String, dynamic>?)?['userEntity'];
         return HomeScreen(
-          user: user,
-        );
+            userEntity: userEntity,
+            );
+      },
+    ),
+    GoRoute(
+      path: routerPathEditItem,
+      name: routerNameEditItem,
+      builder: (BuildContext context, GoRouterState state) {
+        final name = (state.extra as Map<String, dynamic>?)?['name'];
+        return EditItemScreen(
+             name: name,
+            );
       },
     ),
   ],

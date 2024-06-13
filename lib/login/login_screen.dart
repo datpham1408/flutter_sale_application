@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_sale_application/entity/user_entity.dart';
 import 'package:flutter_sale_application/login/login_cubit.dart';
 import 'package:flutter_sale_application/login/login_state.dart';
 import 'package:flutter_sale_application/main.dart';
@@ -193,7 +194,8 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     if (state is LoginSuccessState) {
-      handleItemClickHome();
+      var entity = state.userEntity;
+      handleItemClickHome(userEntity: entity);
       return;
     }
     if (state is LoginErrorState) {
@@ -206,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     if (state is LoginWithGoogleSuccessState) {
       var user = state.user;
-      handleItemClickHome(user: user);
+      // handleItemClickHome(user: user);
       return;
     }
     if (state is LoginWithGoogleErrorState) {
@@ -215,10 +217,10 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void handleItemClickHome({User? user}) {
+  void handleItemClickHome({UserEntity? userEntity}) {
     GoRouter.of(context).pushNamed(
       routerNameHome,
-      extra: {'user': user},
+      extra: {'userEntity': userEntity},
     );
   }
 }

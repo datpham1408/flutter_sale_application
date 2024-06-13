@@ -1,11 +1,21 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_sale_application/buy_food/buy_food_cubit.dart';
 import 'package:flutter_sale_application/cart/cart_cubit.dart';
+import 'package:flutter_sale_application/edit_cart/edit_cart_cubit.dart';
+import 'package:flutter_sale_application/edit_item/edit_item_cubit.dart';
+import 'package:flutter_sale_application/entity/cart_adapter.dart';
+import 'package:flutter_sale_application/entity/food_adapter.dart';
+import 'package:flutter_sale_application/entity/market_food_adapter.dart';
 import 'package:flutter_sale_application/entity/user_adapter.dart';
+import 'package:flutter_sale_application/food/detail_food_cubit.dart';
 import 'package:flutter_sale_application/home/sale_application_cubit.dart';
 import 'package:flutter_sale_application/login/login_cubit.dart';
+import 'package:flutter_sale_application/market/market_cubit.dart';
 import 'package:flutter_sale_application/profile/profile_cubit.dart';
 import 'package:flutter_sale_application/router/my_application.dart';
+import 'package:flutter_sale_application/status/status_cubit.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -17,10 +27,9 @@ const FirebaseOptions android = FirebaseOptions(
   appId: '1:391240880443:android:5269d3229cb5c0bc78a71e',
   messagingSenderId: '391240880443',
   projectId: 'flutter-sale-application',
-  databaseURL:  '',
+  databaseURL: '',
   storageBucket: 'flutter-sale-application.appspot.com',
 );
-
 
 final GetIt getIt = GetIt.instance;
 SharedPreferences? preferences;
@@ -28,9 +37,7 @@ late final FirebaseApp app;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  app = await Firebase.initializeApp(
-    options: android
-  ) ;
+  app = await Firebase.initializeApp(options: android);
   await initGetIt();
   await initCubit();
   await initHive();
@@ -41,29 +48,41 @@ Future<void> main() async {
 Future<void> initGetIt() async {}
 
 Future<void> initCubit() async {
-  getIt.registerLazySingleton<LoginCubit>(() => LoginCubit());
-  getIt.registerLazySingleton<RegisterCubit>(() => RegisterCubit());
-  getIt.registerLazySingleton<SaleApplicationCubit>(() => SaleApplicationCubit());
-  getIt.registerLazySingleton<ProfileCubit>(() => ProfileCubit());
-  getIt.registerLazySingleton<CartCubit>(() => CartCubit());
+  getIt.registerFactory<LoginCubit>(() => LoginCubit());
+  getIt.registerFactory<RegisterCubit>(() => RegisterCubit());
+  getIt.registerFactory<SaleApplicationCubit>(
+      () => SaleApplicationCubit());
+  getIt.registerFactory<ProfileCubit>(() => ProfileCubit());
+  getIt.registerFactory<CartCubit>(() => CartCubit());
+  // getIt.registerFactory<AddItemCubit>(() => AddItemCubit());
+  getIt.registerFactory<FoodCubit>(() => FoodCubit());
+  getIt.registerFactory<BuyFoodCubit>(() => BuyFoodCubit());
+  getIt.registerFactory<MarketCubit>(() => MarketCubit());
+  getIt.registerFactory<StatusCubit>(() => StatusCubit());
+  getIt.registerFactory<EditCartCubit>(() => EditCartCubit());
+
+  getIt.registerFactory<EditItemCubit>(() => EditItemCubit());
 }
 
 Future<void> initHive() async {
   await Hive.initFlutter();
   Hive.registerAdapter(UserAdapter());
+  Hive.registerAdapter(FoodAdapter());
+  Hive.registerAdapter(MarketFoodAdapter());
+  Hive.registerAdapter(CartAdapter());
 }
 
-Future<void> initSharedPreferences() async {
-}
+Future<void> initSharedPreferences() async {}
 
 class Application extends StatelessWidget {
   const Application({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: true,
-      home: MyApplication(),
+      home: const MyApplication(),
+      builder: EasyLoading.init(),
     );
   }
 }

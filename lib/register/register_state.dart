@@ -20,7 +20,8 @@ class ValidatePhoneState extends RegisterState {}
 
 class ValidateConfirmPasswordState extends RegisterState {}
 
-class CheckValidateConfirmPasswordStateIsTheSamePassword extends RegisterState {}
+class CheckValidateConfirmPasswordStateIsTheSamePassword
+    extends RegisterState {}
 
 class ValidatePasswordState extends RegisterState {}
 
@@ -38,5 +39,17 @@ class ValidateSuccessState extends RegisterState {
       required this.confirmPassword,
       required this.yourName,
       required this.phone,
-      required this.age});
+      required this.age,});
+}
+
+class CheckBoxState extends RegisterState {
+  final bool? isSelected;
+
+  CheckBoxState({required this.isSelected});
+}
+
+class CheckBoxState1 extends RegisterState {
+  final bool? isSelected;
+
+  CheckBoxState1({required this.isSelected});
 }

@@ -4,6 +4,7 @@ import 'package:flutter_sale_application/entity/user_entity.dart';
 import 'package:flutter_sale_application/register/register_state.dart';
 import 'package:flutter_sale_application/resources/hive_key.dart';
 import 'package:hive/hive.dart';
+
 class RegisterCubit extends Cubit<RegisterState> {
   RegisterCubit() : super(RegisterState());
 
@@ -92,10 +93,11 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   Future<void> saveLoginInfo(
       {String email = '',
-        String password = '',
-        String age = '',
-        String phone = '',
-        String fullName = ''}) async {
+      String password = '',
+      String age = '',
+      String phone = '',
+      String fullName = '',
+      String selected = ''}) async {
     final box = await Hive.openBox<UserEntity>(HiveKey.user);
 
     final user = UserEntity()
@@ -103,8 +105,18 @@ class RegisterCubit extends Cubit<RegisterState> {
       ..phone = phone
       ..password = password
       ..age = age
-      ..fullName = fullName;
+      ..fullName = fullName
+      ..selected = selected;
 
     await box.add(user);
+    var a = 0;
+  }
+
+  void checkBox(bool? value) {
+    emit(CheckBoxState(isSelected: value));
+  }
+
+  void checkBox1(bool? value) {
+    emit(CheckBoxState1(isSelected: value));
   }
 }

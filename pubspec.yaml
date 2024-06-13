@@ -52,6 +52,7 @@ dependencies:
   firebase_auth:
   google_sign_in:
   activout_firebase_options_selector:
+  flutter_radio_group:
 
 
 

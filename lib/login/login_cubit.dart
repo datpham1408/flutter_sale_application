@@ -84,7 +84,7 @@ class LoginCubit extends Cubit<LoginState> {
       if (rememberMe == true) {
         await saveRememberMe(email);
       }
-      emit(LoginSuccessState());
+      emit(LoginSuccessState(userEntity: entity));
     } else {
       emit(LoginErrorState());
     }

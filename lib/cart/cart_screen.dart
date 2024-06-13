@@ -18,16 +18,6 @@ class _CartScreenState extends State<CartScreen> {
     DeliveredScreen(),
     CanceledScreen()
   ];
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: SafeArea(
-  //       child: _screens[_currentIndex],
-  //     ),
-  //     bottomNavigationBar: itemBottomBar(),
-  //   );
-  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +47,7 @@ class _CartScreenState extends State<CartScreen> {
       items: const [
         BottomNavigationBarItem(
           icon: SizedBox.shrink(),
-          label: 'Trạng Thái Đơn Hàng',
+          label: 'Đơn Hàng Đang Giao',
         ),
         BottomNavigationBarItem(
           icon: SizedBox.shrink(),

@@ -31,6 +31,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _textEditingControllerPhone =
       TextEditingController();
   final RegisterCubit _registerCubit = getIt.get<RegisterCubit>();
+  bool isCheck = false;
+  bool isCheck1 = false;
+  String value = '';
 
   @override
   Widget build(BuildContext context) {
@@ -59,27 +62,64 @@ class _RegisterScreenState extends State<RegisterScreen> {
         children: [
           const Text(
             dangKi,
-            style: TextStyle(fontSize: 30,color: Colors.white),
+            style: TextStyle(fontSize: 30, color: Colors.white),
           ),
-          itemTextFlied(text: email,textEditingController: _textEditingControllerEmail),
-          itemTextFlied(text:fullName,textEditingController: _textEditingControllerName),
-          itemTextFlied(text: age,textEditingController: _textEditingControllerAge),
-          itemTextFlied(text: phone,textEditingController: _textEditingControllerPhone),
-          itemTextFlied(text: pass,textEditingController: _textEditingControllerPass,obscureText: true),
-          itemTextFlied(text: confirmPass,textEditingController: _textEditingControllerConfirmPass,obscureText: true),
-           GestureDetector(
-             onTap: (){
-               handleItemClickLogin();
-             },
-               child:  const Padding(
-                 padding: EdgeInsets.all(8.0),
-                 child: Text(alreadyAccount),
-               )),
+          itemTextFlied(
+              text: email, textEditingController: _textEditingControllerEmail),
+          itemTextFlied(
+              text: fullName,
+              textEditingController: _textEditingControllerName),
+          itemTextFlied(
+              text: age, textEditingController: _textEditingControllerAge),
+          itemTextFlied(
+              text: phone, textEditingController: _textEditingControllerPhone),
+          itemTextFlied(
+              text: pass,
+              textEditingController: _textEditingControllerPass,
+              obscureText: true),
+          itemTextFlied(
+              text: confirmPass,
+              textEditingController: _textEditingControllerConfirmPass,
+              obscureText: true),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                BlocBuilder<RegisterCubit, RegisterState>(
+                    buildWhen: (_, RegisterState state) {
+                  return state is CheckBoxState;
+                }, builder: (_, RegisterState state) {
+                  if (state is CheckBoxState) {
+                    return itemCheckBox(state: state, text: user);
+                  }
+                  return itemCheckBox(text: user);
+                }),
+                BlocBuilder<RegisterCubit, RegisterState>(
+                    buildWhen: (_, RegisterState state) {
+                  return state is CheckBoxState1;
+                }, builder: (_, RegisterState state) {
+                  if (state is CheckBoxState1) {
+                    return itemCheckBox1(state: state, text: store);
+                  }
+                  return itemCheckBox1(text: store);
+                }),
+              ],
+            ),
+          ),
+          GestureDetector(
+              onTap: () {
+                handleItemClickLogin();
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(alreadyAccount),
+              )),
           itemButton(),
         ],
       ),
     );
   }
+
   void handleItemClickLogin() {
     GoRouter.of(context).pushNamed(
       routerNameLogin,
@@ -104,12 +144,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
             phone: _textEditingControllerPhone.text,
             age: _textEditingControllerAge.text);
       },
-      child:  Text(registerAccount,style: TextStyle(color: Colors.black),),
+      child: const Text(
+        registerAccount,
+        style: TextStyle(color: Colors.black),
+      ),
+    );
+  }
+
+  Widget itemCheckBox({CheckBoxState? state, String? text}) {
+    return Row(
+      children: [
+        Checkbox(
+            tristate: true,
+            value: state?.isSelected ?? false,
+            onChanged: (bool? value) {
+              isCheck = value ?? false;
+              _registerCubit.checkBox(value);
+            }),
+        Text(text ?? ''),
+      ],
+    );
+  }
+
+  Widget itemCheckBox1({CheckBoxState1? state, String? text}) {
+    return Row(
+      children: [
+        Checkbox(
+            tristate: true,
+            value: state?.isSelected ?? false,
+            onChanged: (bool? value) {
+              isCheck1 = value ?? false;
+              _registerCubit.checkBox1(value);
+            }),
+        Text(text ?? ''),
+      ],
     );
   }
 
   Widget itemTextFlied(
-  { String text ='', TextEditingController? textEditingController,bool? obscureText}) {
+      {String text = '',
+      TextEditingController? textEditingController,
+      bool? obscureText}) {
     return Container(
       margin: const EdgeInsets.all(16),
       child: Column(
@@ -121,7 +196,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           Utils.instance.sizeBoxHeight(4),
           Container(
-            decoration: BoxDecoration(border: Border.all(color: Colors.white),borderRadius: BorderRadius.circular(36)),
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(36)),
             child: TextField(
               obscureText: obscureText ?? false,
               controller: textEditingController,
@@ -132,6 +209,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+
 
   void _handleListener(RegisterState state) {
     if (state is RegisterCheckIsEmptyEmail) {
@@ -182,16 +260,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Utils.instance.showToast(passSameConfirm);
       return;
     }
+    if (state is CheckBoxState) {
+      if (state.isSelected == true) {
+        value = user;
+      }
+    }
+    if (state is CheckBoxState1) {
+      if (state.isSelected == true) {
+        value = store;
+      }
+    }
     if (state is ValidateSuccessState) {
       final String email = state.email;
       final String pass = state.pass;
       final String phone = state.phone;
       final String age = state.age;
       final String fullName = state.yourName;
-      _registerCubit.saveLoginInfo(email:email,password: pass,phone: phone,age: age,fullName: fullName );
+      _registerCubit.saveLoginInfo(
+          email: email,
+          password: pass,
+          phone: phone,
+          age: age,
+          fullName: fullName,
+          selected: value);
       Utils.instance.showToast('Dang ki thanh cong');
       handleItemClickLogin();
     }
   }
-
 }

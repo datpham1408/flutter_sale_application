@@ -13,3 +13,20 @@ class _CanceledScreenState extends State<CanceledScreen> {
     return Text('canceled');
   }
 }
+
+
+/// MVVM
+/// Model -> user khong thay duoc
+///
+/// ViewModel -> user khong thay duoc
+///
+/// View -> user tuong tac duoc
+///
+/// Use case:
+/// User login
+/// 1. User input email
+/// 2. Input password
+/// 3. Click button submit
+///
+/// View -> ban event -> ViewModel
+///

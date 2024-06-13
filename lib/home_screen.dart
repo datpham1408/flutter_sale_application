@@ -1,13 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sale_application/cart/cart_screen.dart';
+import 'package:flutter_sale_application/entity/food_entity.dart';
 import 'package:flutter_sale_application/home/sale_application_home_screen.dart';
 import 'package:flutter_sale_application/profile/profile_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  final User? user;
+import 'entity/user_entity.dart';
 
-  const HomeScreen({super.key, this.user});
+class HomeScreen extends StatefulWidget {
+  final UserEntity userEntity;
+
+  const HomeScreen({super.key,required this.userEntity});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -15,16 +18,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  User? _user;
-  late ProfileScreen _profileScreen;
   final List<Widget> _screens = [];
+
+  PageController _pageController = PageController();
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: _screens[_currentIndex],
+        // child: PageView(),
+        child: PageView(
+          controller: _pageController,
+          children:_screens,
+        ),
       ),
       bottomNavigationBar: itemBottomBar(),
     );
@@ -33,18 +40,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _user = widget.user;
-    _profileScreen =
-        ProfileScreen(user: _user);
+    // _user = widget.user;
     _screens.addAll([
-      SaleApplicationHomeScreen(),
+      SaleApplicationHomeScreen(userEntity: widget.userEntity),
       CartScreen(),
-      _profileScreen,
+      ProfileScreen(userEntity: widget.userEntity,),
     ]);
-  }
-
-  Widget getProfileScreen() {
-    return ProfileScreen(user: _user);
   }
 
   Widget itemBottomBar() {
@@ -53,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap: (index) {
         setState(() {
           _currentIndex = index;
+          _pageController.jumpToPage(index);
         });
       },
       items: const [
@@ -62,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.shopping_cart),
-          label: 'Giỏ Hàng',
+          label: 'Đơn Hàng',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_circle_outlined),

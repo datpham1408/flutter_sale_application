@@ -16,4 +16,7 @@ class UserEntity extends HiveObject {
 
   @HiveField(4)
    String? fullName;
+
+  @HiveField(5)
+  String? selected;
 }
