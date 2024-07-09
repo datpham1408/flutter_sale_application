@@ -25,19 +25,22 @@ class FoodCubit extends Cubit<FoodState> {
     );
   }
 
-  Future<void> getDataFood() async {
+  Future<void> getDataFood(String loai) async {
     final box = await Hive.openBox<FoodEntity>(HiveKey.food);
     final List<FoodEntity> entity = box.values.toList();
+    final List<FoodEntity> loaiEntity = entity.where((element) => element.loai ==loai).toList();
 
-    emit(GetDataFood(entity: entity));
+    emit(GetDataFood(entity: loaiEntity));
   }
 
-  Future<void> getDataUser() async {
+  Future<void> getDataUser(String? email) async {
     final Box<UserEntity> box = await Hive.openBox<UserEntity>(HiveKey.user);
-    final UserEntity listEntity = box.values.first;
+    final List<UserEntity> listEntity = box.values.toList();
+
+    final entity = listEntity.firstWhere((UserEntity element) => element.email == email);
 
 
-    emit(GetUser(entity: listEntity));
+    emit(GetUser(entity: entity));
   }
 
 }

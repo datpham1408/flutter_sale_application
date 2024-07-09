@@ -53,7 +53,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
       margin: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          // Text(themMatHang),
           Utils.instance.sizeBoxHeight(16),
           itemDetailBody(
               hintText: tenMatHang,
@@ -125,7 +124,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   void handleClickHome() {
-    GoRouter.of(context).pushNamed(routerNameHome);
+    GoRouter.of(context).pop();
   }
 
   void handleListener(AddItemState state) {

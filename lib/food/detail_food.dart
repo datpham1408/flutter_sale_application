@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sale_application/entity/food_entity.dart';
+import 'package:flutter_sale_application/entity/user_entity.dart';
 import 'package:flutter_sale_application/food/detail_food_cubit.dart';
 import 'package:flutter_sale_application/food/detail_food_state.dart';
 import 'package:flutter_sale_application/main.dart';
@@ -13,9 +14,13 @@ import 'package:go_router/go_router.dart';
 class DetailFoodScreen extends StatefulWidget {
   final List<FoodEntity>? entity;
   final String title;
+  final UserEntity? userEntity;
 
   const DetailFoodScreen(
-      {super.key, required this.entity, required this.title});
+      {super.key,
+      required this.entity,
+      required this.title,
+      required this.userEntity});
 
   @override
   State<DetailFoodScreen> createState() => _DetailFoodScreenState();
@@ -24,7 +29,7 @@ class DetailFoodScreen extends StatefulWidget {
 class _DetailFoodScreenState extends State<DetailFoodScreen> {
   final FoodCubit _foodCubit = getIt.get<FoodCubit>();
   String? ten;
-
+   List<FoodEntity>? food;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +54,8 @@ class _DetailFoodScreenState extends State<DetailFoodScreen> {
   @override
   void initState() {
     super.initState();
-    _foodCubit.getDataUser();
+    _foodCubit.getDataFood(widget.title);
+    _foodCubit.getDataUser(widget.userEntity?.email);
   }
 
   String handleImage() {
@@ -78,7 +84,7 @@ class _DetailFoodScreenState extends State<DetailFoodScreen> {
   }
 
   Widget itemBody() {
-    final List<FoodEntity>? food = widget.entity;
+    // food = widget.entity;
 
     return food?.isNotEmpty == true
         ? ListView.builder(
@@ -101,7 +107,19 @@ class _DetailFoodScreenState extends State<DetailFoodScreen> {
   }
 
   Widget itemDetailBody({String? image, String? title, double? coast}) {
+
+   //  Key();
+   //  Key();
+   //
+   //  UniqueKey();
+   //  ValueKey("aa");
+   // var key1= GlobalKey<FormState>();
+   // //node
+   // key1.currentContext
+   //  var key2 = GlobalKey<StateError>();
+
     return GestureDetector(
+      // key: Key(""),
       onTap: () {
         if (ten == user) {
           showBottomSheet(
@@ -110,9 +128,9 @@ class _DetailFoodScreenState extends State<DetailFoodScreen> {
               coast: coast ?? 0.0,
               image: image);
         }
-        handleClickEditFood(title ??'');
-
-        /// handle tiếp
+        if (ten == store) {
+          handleClickEditFood(title ?? '');
+        }
       },
       child: Container(
         padding: const EdgeInsets.all(8),
@@ -284,19 +302,25 @@ class _DetailFoodScreenState extends State<DetailFoodScreen> {
   }
 
   void handleClickHome() {
-    GoRouter.of(context).pushNamed(routerNameHome);
+    GoRouter.of(context).pop();
   }
 
-  void handleClickEditFood(String name) {
-    GoRouter.of(context).pushNamed(routerNameEditItem, extra: {'name': name});
-  }
+  Future<void> handleClickEditFood(String name) async {
+    var result = await GoRouter.of(context)
+        .pushNamed(routerNameEditItem, extra: {'name': name});
 
-  /// hanlde tiep
+    if (result != null) {
+      _foodCubit.getDataFood(widget.title);
+    }
+  }
 
   void _handleListener(FoodState state) {
     if (state is SaveFood) {
       Utils.instance.showToast(thanhCong);
       handleClickHome();
+    }
+    if(state is GetDataFood){
+      food = state.entity;
     }
     if (state is GetUser) {
       ten = state.entity.selected;

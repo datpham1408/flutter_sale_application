@@ -28,6 +28,7 @@ class _EditCartScreenState extends State<EditCartScreen> {
   TextEditingController _textEditingControllerDiaChi = TextEditingController();
 
   String? selectedValue;
+  String? selectedButton;
 
   @override
   Widget build(BuildContext context) {
@@ -67,12 +68,6 @@ class _EditCartScreenState extends State<EditCartScreen> {
           itemBuilder: (context, index) {
             final MarketFoodEntity? entity = list?[index];
             return Container();
-            // return itemDetailBody(
-            //     image: entity?.image,
-            //     title: entity?.ten,
-            //     soLuong: entity?.soLuong,
-            //     thanhTien: entity?.thanhTien,
-            //     entity: entity);
           },
         ),
         itemTextFlied(
@@ -85,7 +80,17 @@ class _EditCartScreenState extends State<EditCartScreen> {
             hint: cartEntity?.diaChi),
         itemPhuongThucThanhToan(),
         Text('thanh toan: ${total.toStringAsFixed(2)}'),
-        itemButton()
+        itemButton(),
+        Row(
+          children: [
+            itemButtonStatus(daGiao, () {
+              handleClickHome();
+            }),
+            itemButtonStatus(huyDonHang, () {
+              handleClickHome();
+            }),
+          ],
+        )
       ],
     );
   }
@@ -141,6 +146,25 @@ class _EditCartScreenState extends State<EditCartScreen> {
           )
         ],
       ),
+    );
+  }
+
+  Widget itemButtonStatus(String text, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedButton = text;
+        });
+        onTap.call();
+      },
+      child: Container(
+          margin: const EdgeInsets.only(top: 24),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.grey,
+          ),
+          child: Text(text)),
     );
   }
 
@@ -218,10 +242,19 @@ class _EditCartScreenState extends State<EditCartScreen> {
       cartEntity?.hinhThucThanhToan = selectedValue;
     }
 
+    if (selectedButton != null) {
+      if (selectedButton == daGiao) {
+        cartEntity?.trangThaiDonHang = daGiao;
+      } else if (selectedButton == huyDonHang) {
+        cartEntity?.trangThaiDonHang = huyDonHang;
+      }
+    }
+
     _editCartCubit.saveEditDataTask(cartEntity: cartEntity);
   }
 
   void _handleListener(EditCartState state) {
+
     if (state is GetBuyFoodState) {
       list = state.entity;
       total = state.total;

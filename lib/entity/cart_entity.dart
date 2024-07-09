@@ -22,6 +22,9 @@ class CartEntity extends HiveObject {
 
  @HiveField(6)
   int? soLuongSanPham;
+
+ @HiveField(7)
+  String? trangThaiDonHang;
   // @HiveField(6)
   // List<DetailMarketFoodEntity>? listFood;
 }

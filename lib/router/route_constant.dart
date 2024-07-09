@@ -3,6 +3,8 @@ const String routerPathRegister = '/register';
 const String routerPathSale = '/sale';
 const String routerPathHome = '/home';
 const String routerPathAddItem = '/add_item';
+const String routerPathChat = '/chat';
+const String routerPathChatGroup = '/chat_group';
 
 const String routerPathFish = '/fish';
 const String routerPathMeat = '/meat';
@@ -15,12 +17,15 @@ const String routerPathBuyFood = '/buy_food';
 const String routerPathMarket = '/market';
 const String routerPathEditCart = '/edit_cart';
 const String routerPathEditItem = '/edit_item';
+const String routerPathGoogleMap = '/google_map';
 
 const String routerNameLogin = 'login';
 const String routerNameRegister = 'register';
 const String routerNameSale = 'sale';
 const String routerNameHome = 'home';
 const String routerNameAddItem = 'add_item';
+const String routerNameChat = 'chat';
+const String routerNameChatGroup = 'chat_group';
 
 const String routerNameFish = 'fish';
 const String routerNameMeat = 'meat';
@@ -33,4 +38,5 @@ const String routerNameBuyFood = 'buy_food';
 const String routerNameMarket = 'market';
 const String routerNameEditCart = 'edit_cart';
 const String routerNameEditItem = 'edit_item';
+const String routerNameGoogleMap = 'google_map';
 

@@ -8,7 +8,17 @@ class EditItemCubit extends Cubit<EditItemState> {
   EditItemCubit() : super(EditItemState());
 
   Future<void> saveEditDataFood({FoodEntity? foodEntity}) async {
-    foodEntity?.save();
+    //get list type cua entity
+    final box = await Hive.openBox<FoodEntity>(HiveKey.food) ;
+    final List<FoodEntity> list =box.values.toList();
+    var a =0;
+
+    await foodEntity?.save();
+
+    //get
+    final box1 = await Hive.openBox<FoodEntity>(HiveKey.food);
+    final List<FoodEntity>list1 = box1.values.toList();
+    var b = 0;
 
     emit(SaveDataFood());
   }

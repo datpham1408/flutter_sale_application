@@ -52,9 +52,13 @@ dependencies:
   firebase_auth:
   google_sign_in:
   activout_firebase_options_selector:
-  flutter_radio_group:
-
-
+  google_maps_flutter:
+  location:
+  firebase_remote_config:
+  firebase_database:
+  dash_chat_2:
+  firebase_storage:
+  cloud_firestore:
 
 
 dev_dependencies:

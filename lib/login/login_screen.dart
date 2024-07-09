@@ -196,6 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (state is LoginSuccessState) {
       var entity = state.userEntity;
       handleItemClickHome(userEntity: entity);
+      // handleGoName();
       return;
     }
     if (state is LoginErrorState) {
@@ -218,9 +219,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void handleItemClickHome({UserEntity? userEntity}) {
-    GoRouter.of(context).pushNamed(
+    GoRouter.of(context).goNamed(
       routerNameHome,
       extra: {'userEntity': userEntity},
     );
+
+  }
+  void handleGoName(){
+    GoRouter.of(context).goNamed(routerNameHome);
   }
 }

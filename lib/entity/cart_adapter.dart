@@ -14,7 +14,8 @@ class CartAdapter extends TypeAdapter<CartEntity> {
       ..tongTien = reader.readDouble()
       ..idFood = reader.readString()
       ..id = reader.readString()
-      ..soLuongSanPham = reader.readInt();
+      ..soLuongSanPham = reader.readInt()
+      ..trangThaiDonHang = reader.readString();
   }
 
   @override
@@ -26,5 +27,6 @@ class CartAdapter extends TypeAdapter<CartEntity> {
     writer.writeString(cart.idFood ?? '');
     writer.writeString(cart.id ?? '');
     writer.writeInt(cart.soLuongSanPham ?? 0);
+    writer.writeString(cart.trangThaiDonHang ?? '');
   }
 }

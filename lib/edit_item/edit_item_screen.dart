@@ -13,6 +13,7 @@ import 'edit_item_state.dart';
 
 class EditItemScreen extends StatefulWidget {
   final String name;
+
   const EditItemScreen({Key? key, required this.name}) : super(key: key);
 
   @override
@@ -25,10 +26,12 @@ class _EditItemScreenState extends State<EditItemScreen> {
       TextEditingController();
   TextEditingController _textEditingControllerGiaMatHang =
       TextEditingController();
+
   TextEditingController _textEditingControllerDonViTinh =
       TextEditingController();
+
   String? selectedValue;
-  FoodEntity? entity;
+  FoodEntity entity = FoodEntity();
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +59,6 @@ class _EditItemScreenState extends State<EditItemScreen> {
   void initState() {
     super.initState();
     _editItemCubit.getDataFood(widget.name);
-    selectedValue = entity?.loai;
   }
 
   Widget itemBody() {
@@ -66,7 +68,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
         children: [
           Utils.instance.sizeBoxHeight(16),
           itemDetailBody(
-              hintText: entity?.ten,
+              hintText: entity.ten,
               textEditingController: _textEditingControllerTenMatHang),
           Utils.instance.sizeBoxHeight(16),
           DropdownButton<String>(
@@ -86,11 +88,11 @@ class _EditItemScreenState extends State<EditItemScreen> {
           ),
           Utils.instance.sizeBoxHeight(16),
           itemDetailBody(
-              hintText: entity?.gia,
+              hintText: entity.gia,
               textEditingController: _textEditingControllerGiaMatHang),
           Utils.instance.sizeBoxHeight(16),
           itemDetailBody(
-              hintText: entity?.donVi,
+              hintText: entity.donVi,
               textEditingController: _textEditingControllerDonViTinh),
           Utils.instance.sizeBoxHeight(16),
           itemButton()
@@ -124,36 +126,39 @@ class _EditItemScreenState extends State<EditItemScreen> {
       decoration: BoxDecoration(border: Border.all(color: Colors.black)),
       child: TextField(
         controller: textEditingController,
-        decoration: InputDecoration(hintText: hintText),
       ),
     );
   }
 
   void handleEditItem() {
     if (_textEditingControllerTenMatHang.text.isNotEmpty) {
-      entity?.ten = _textEditingControllerTenMatHang.text;
+      entity.ten = _textEditingControllerTenMatHang.text;
     }
     if (_textEditingControllerGiaMatHang.text.isNotEmpty) {
-      entity?.gia = _textEditingControllerGiaMatHang.text;
+      entity.gia = _textEditingControllerGiaMatHang.text;
     }
     if (_textEditingControllerDonViTinh.text.isNotEmpty) {
-      entity?.donVi = _textEditingControllerDonViTinh.text;
+      entity.donVi = _textEditingControllerDonViTinh.text;
     }
 
+    entity.loai = selectedValue;
 
     _editItemCubit.saveEditDataFood(foodEntity: entity);
   }
 
-
   void handleClickHome() {
-    GoRouter.of(context).pushNamed(routerNameHome);
+    GoRouter.of(context).pop(true);
   }
 
   void handleListener(EditItemState state) {
     if (state is GetFood) {
       entity = state.entity;
+      _textEditingControllerGiaMatHang.text = entity.gia!;
+      _textEditingControllerTenMatHang.text = entity.ten!;
+      _textEditingControllerDonViTinh.text = entity.donVi!;
+      selectedValue = entity.loai;
     }
-    if(state is SaveDataFood){
+    if (state is SaveDataFood) {
       Utils.instance.showToast('thanh cong');
       handleClickHome();
     }

@@ -14,7 +14,8 @@ class MarketCubit extends Cubit<MarketState> {
     final Box<MarketFoodEntity> box =
         await Hive.openBox<MarketFoodEntity>(HiveKey.marketFood);
     final List<MarketFoodEntity> listEntity = box.values.toList();
-    List<String> listKeys =  listEntity.map((MarketFoodEntity e) => e.id.toString()).toList();
+    List<String> listKeys =
+        listEntity.map((MarketFoodEntity e) => e.id.toString()).toList();
     // List<DetailMarketFoodEntity> listDetail =
     // List<double> total = listEntity.map((MarketFoodEntity e) =>e. );
 
@@ -22,7 +23,7 @@ class MarketCubit extends Cubit<MarketState> {
     //     .map((item) => item.thanhTien)
     //     .reduce((value, element) => value! + element!);
 
-    emit(GetBuyFoodState(entity: listEntity, total: 0.0,id: listKeys.first));
+    emit(GetBuyFoodState(entity: listEntity, total: 0.0, id: listKeys.first));
   }
 
   void checkEmpty({
@@ -33,6 +34,7 @@ class MarketCubit extends Cubit<MarketState> {
     String idFood = '',
     String id = '',
     int soLuongSanPham = 0,
+    String trangThaiDonHang = ''
   }) {
     if (tenKhachHang.isEmpty) {
       emit(ErrorField(text: tenEmpty));
@@ -52,6 +54,7 @@ class MarketCubit extends Cubit<MarketState> {
       diaChi: diaChi,
       phuongThucThanhToan: phuongThucThanhToan,
       tongTien: tongTien,
+      trangThaiDonHang: trangThaiDonHang
     );
   }
 
@@ -62,7 +65,8 @@ class MarketCubit extends Cubit<MarketState> {
       double tongTien = 0.0,
       String idFood = '',
       String id = '',
-      int soLuongSanPham = 0}) async {
+      int soLuongSanPham = 0,
+      String trangThaiDonHang = ''}) async {
     final box = await Hive.openBox<CartEntity>(HiveKey.cart);
 
     final cart = CartEntity()
@@ -72,7 +76,8 @@ class MarketCubit extends Cubit<MarketState> {
       ..tongTien = tongTien
       ..idFood = idFood
       ..id = id
-      ..soLuongSanPham = soLuongSanPham;
+      ..soLuongSanPham = soLuongSanPham
+      ..trangThaiDonHang = trangThaiDonHang;
 
     await box.add(cart);
 
@@ -84,7 +89,8 @@ class MarketCubit extends Cubit<MarketState> {
           tongTien: tongTien,
           id: id,
           idFood: idFood,
-          soLuongSanPham: soLuongSanPham),
+          soLuongSanPham: soLuongSanPham,
+          trangThaiDonHang: trangThaiDonHang),
     );
   }
 

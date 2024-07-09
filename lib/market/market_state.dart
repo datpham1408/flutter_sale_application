@@ -10,6 +10,7 @@ class SuccessMarketFood extends MarketState {
   final String id;
   final double tongTien;
   final int soLuongSanPham;
+  final String trangThaiDonHang;
 
   SuccessMarketFood({
     required this.tenKhachHang,
@@ -19,6 +20,7 @@ class SuccessMarketFood extends MarketState {
     required this.id,
     required this.soLuongSanPham,
     required this.idFood,
+    required this.trangThaiDonHang,
   });
 }
 

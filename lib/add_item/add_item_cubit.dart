@@ -5,7 +5,6 @@ import 'package:flutter_sale_application/resources/hive_key.dart';
 import 'package:hive/hive.dart';
 
 import '../resources/string.dart';
-import 'add_item_state.dart';
 
 class AddItemCubit extends Cubit<AddItemState> {
   AddItemCubit() : super(AddItemState());

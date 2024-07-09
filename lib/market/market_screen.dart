@@ -140,7 +140,11 @@ class _MarketScreenState extends State<MarketScreen> {
             tenKhachHang: _textEditingControllerTenKhachHang.text,
             diaChi: _textEditingControllerDiaChi.text,
             phuongThucThanhToan: selectedValue ?? '',
-            tongTien: total,soLuongSanPham: list?.length ??0,id: '1',idFood: idFood);
+            tongTien: total,
+            soLuongSanPham: list?.length ?? 0,
+            id: '1',
+            idFood: idFood,
+            trangThaiDonHang: dangVanChuyen);
       },
       child: Container(
           margin: const EdgeInsets.only(top: 24),

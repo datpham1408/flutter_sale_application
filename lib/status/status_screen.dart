@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_sale_application/resources/string.dart';
 import 'package:flutter_sale_application/router/route_constant.dart';
 import 'package:flutter_sale_application/status/status_cubit.dart';
 import 'package:flutter_sale_application/status/status_state.dart';
@@ -76,7 +77,7 @@ class _StatusScreenState extends State<StatusScreen> {
     );
   }
 
-  Widget itemDetailBody({String? tenKhachHang,String? diaChi}) {
+  Widget itemDetailBody({String? tenKhachHang, String? diaChi}) {
     return GestureDetector(
       onTap: () {
         handleClickEditCart();
@@ -101,6 +102,9 @@ class _StatusScreenState extends State<StatusScreen> {
                     Text('Địa Chỉ: $diaChi'),
                     const Text('Ngày Đặt: 29/5/2024'),
                     const Text('Dự Kiến Giao: 1/6/2024'),
+                    const Align(
+                        alignment: Alignment.bottomRight,
+                        child: Text(dangVanChuyen)),
                   ],
                 ),
               ],

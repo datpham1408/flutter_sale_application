@@ -85,7 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void handleItemClickLogout() {
-    GoRouter.of(context).pushNamed(
+    GoRouter.of(context).goNamed(
       routerNameLogin,
     );
   }

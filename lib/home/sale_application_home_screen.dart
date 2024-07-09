@@ -10,12 +10,14 @@ import 'package:flutter_sale_application/resources/string.dart';
 import 'package:flutter_sale_application/resources/utils.dart';
 import 'package:flutter_sale_application/router/route_constant.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../entity/food_entity.dart';
 
 class SaleApplicationHomeScreen extends StatefulWidget {
-  final UserEntity userEntity;
-  const SaleApplicationHomeScreen({super.key,required this.userEntity});
+  final UserEntity? userEntity;
+
+  const SaleApplicationHomeScreen({super.key,  this.userEntity});
 
   @override
   State<SaleApplicationHomeScreen> createState() =>
@@ -28,13 +30,17 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
   late List<FoodEntity> listEntity;
   List<MarketFoodEntity>? listMarketEntity;
   String? title;
+  UserEntity userEntity = UserEntity();
+  String? loai;
+  GoogleMapController? _mapController;
+  LatLng initialCameraPosition = LatLng(0, 0);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _saleApplicationCubit.getMarketFood();
-      _saleApplicationCubit.getDataUser(widget.userEntity.email);
+      _saleApplicationCubit.getDataUser(widget.userEntity?.email);
     });
   }
 
@@ -55,6 +61,14 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
       ),
     ));
   }
+
+  // void onMapCreated(GoogleMapController controller) {
+  //   _mapController = controller;
+  // }
+  //
+  // void showCurrentLocationOnMap(LatLng currentLocation) {
+  //   _mapController?.animateCamera(CameraUpdate.newLatLng(currentLocation));
+  // }
 
   Widget addItem() {
     return title == store
@@ -77,7 +91,6 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
             ),
           )
         : Container();
-
   }
 
   Widget itemBody() {
@@ -85,6 +98,17 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
       children: [
         addItem(),
         itemGoods(),
+        // BlocBuilder<SaleApplicationCubit, SaleApplicationState>(
+        //   builder: (_, SaleApplicationState state) {
+        //     return GoogleMap(
+        //       onMapCreated: onMapCreated,
+        //       initialCameraPosition: CameraPosition(
+        //         target: initialCameraPosition,
+        //         zoom: 14.0,
+        //       ),
+        //     );
+        //   },
+        // ),
       ],
     );
   }
@@ -131,6 +155,22 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
             }),
         Utils.instance.sizeBoxHeight(50),
         itemMarket(),
+        // BlocBuilder<SaleApplicationCubit, SaleApplicationState>(
+        //     builder: (_, SaleApplicationState state) {
+        //   return ElevatedButton(
+        //     onPressed: () {
+        //       _saleApplicationCubit.getCurrentLocation();
+        //       _saleApplicationCubit.openGoogleMaps();
+        //     },
+        //     child: Text('Google Map'),
+        //   );
+        // }),
+        ElevatedButton(
+          onPressed: () {
+            handleClickGoogleMap();
+          },
+          child: Text('Google Map'),
+        )
       ],
     );
   }
@@ -168,19 +208,21 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
     GoRouter.of(context).pushNamed(routerNameBuyFood);
   }
 
+  void handleClickGoogleMap() {
+    GoRouter.of(context).pushNamed(routerNameGoogleMap);
+  }
+
   void handleItemClickAddItem() {
     GoRouter.of(context).pushNamed(
       routerNameAddItem,
     );
   }
 
-  void handleClickDetailFood(List<FoodEntity> entity, String title) {
-    GoRouter.of(context).pushNamed(
+  Future<void> handleClickDetailFood(
+      List<FoodEntity> entity, String title, UserEntity userEntity) async {
+    await GoRouter.of(context).pushNamed(
       routerNameFoodDetail,
-      extra: {
-        'entity': entity,
-        'title': title,
-      },
+      extra: {'entity': entity, 'title': title, 'user': userEntity},
     );
   }
 
@@ -211,15 +253,25 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
   void _handleListener(SaleApplicationState state) {
     if (state is FoodLoadedState) {
       listEntity = state.entity;
+      loai = state.loai;
 
-      handleClickDetailFood(listEntity, state.loai);
+      handleClickDetailFood(listEntity, loai ?? '', userEntity);
     }
     if (state is MarketFoodState) {
       listMarketEntity = state.entity;
     }
     if (state is GetUser) {
+      userEntity = state.entity;
       title = state.entity.selected;
     }
+    // if (state is GoogleMapsState) {
+    //   final currentLocation = state.currentLocation;
+    //   if (currentLocation != null) {
+    //     showCurrentLocationOnMap(currentLocation);
+    //   } else {
+    //     print('Không thể lấy vị trí hiện tại');
+    //   }
+    // }
   }
 }
 
