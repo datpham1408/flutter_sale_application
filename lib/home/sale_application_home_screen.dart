@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sale_application/entity/market_food_entity.dart';
-import 'package:flutter_sale_application/entity/user_entity.dart';
 import 'package:flutter_sale_application/home/sale_application_cubit.dart';
 import 'package:flutter_sale_application/home/sale_application_state.dart';
 import 'package:flutter_sale_application/main.dart';
@@ -13,11 +12,12 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../entity/food_entity.dart';
+import '../model/user_model.dart';
 
 class SaleApplicationHomeScreen extends StatefulWidget {
-  final UserEntity? userEntity;
+  final UserModel userModel;
 
-  const SaleApplicationHomeScreen({super.key,  this.userEntity});
+  const SaleApplicationHomeScreen({super.key, required this.userModel});
 
   @override
   State<SaleApplicationHomeScreen> createState() =>
@@ -29,10 +29,10 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
       getIt.get<SaleApplicationCubit>();
   late List<FoodEntity> listEntity;
   List<MarketFoodEntity>? listMarketEntity;
-  String? title;
-  UserEntity userEntity = UserEntity();
+  // String? title;
+  // UserEntity userEntity = UserEntity();
   String? loai;
-  GoogleMapController? _mapController;
+  // GoogleMapController? _mapController;
   LatLng initialCameraPosition = LatLng(0, 0);
 
   @override
@@ -40,7 +40,7 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _saleApplicationCubit.getMarketFood();
-      _saleApplicationCubit.getDataUser(widget.userEntity?.email);
+      // _saleApplicationCubit.getDataUser(widget.userModel?.id);
     });
   }
 
@@ -71,7 +71,7 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
   // }
 
   Widget addItem() {
-    return title == store
+    return widget.userModel.role == store
         ? GestureDetector(
             onTap: () {
               handleItemClickAddItem();
@@ -155,16 +155,6 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
             }),
         Utils.instance.sizeBoxHeight(50),
         itemMarket(),
-        // BlocBuilder<SaleApplicationCubit, SaleApplicationState>(
-        //     builder: (_, SaleApplicationState state) {
-        //   return ElevatedButton(
-        //     onPressed: () {
-        //       _saleApplicationCubit.getCurrentLocation();
-        //       _saleApplicationCubit.openGoogleMaps();
-        //     },
-        //     child: Text('Google Map'),
-        //   );
-        // }),
         ElevatedButton(
           onPressed: () {
             handleClickGoogleMap();
@@ -176,7 +166,7 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
   }
 
   Widget itemMarket() {
-    if (title == user) {
+    if (widget.userModel.role == user) {
       return listMarketEntity?.isNotEmpty == true
           ? GestureDetector(
               onTap: () {
@@ -219,10 +209,10 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
   }
 
   Future<void> handleClickDetailFood(
-      List<FoodEntity> entity, String title, UserEntity userEntity) async {
+      List<FoodEntity> entity, String title, UserModel userModel) async {
     await GoRouter.of(context).pushNamed(
       routerNameFoodDetail,
-      extra: {'entity': entity, 'title': title, 'user': userEntity},
+      extra: {'entity': entity, 'title': title, 'userModel': userModel},
     );
   }
 
@@ -255,15 +245,15 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
       listEntity = state.entity;
       loai = state.loai;
 
-      handleClickDetailFood(listEntity, loai ?? '', userEntity);
+      handleClickDetailFood(listEntity, loai ?? '', widget.userModel);
     }
     if (state is MarketFoodState) {
       listMarketEntity = state.entity;
     }
-    if (state is GetUser) {
-      userEntity = state.entity;
-      title = state.entity.selected;
-    }
+    // if (state is GetUser) {
+    //   userEntity = state.entity;
+    //   title = state.entity.selected;
+    // }
     // if (state is GoogleMapsState) {
     //   final currentLocation = state.currentLocation;
     //   if (currentLocation != null) {
@@ -275,10 +265,3 @@ class _SaleApplicationHomeScreenState extends State<SaleApplicationHomeScreen> {
   }
 }
 
-///Loai mat hang
-/// Hai san
-/// Rau cu
-/// Thuc uong
-/// Thuc an nhanh
-/// trai cay
-/// ...

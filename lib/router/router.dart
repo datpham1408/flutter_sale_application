@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sale_application/buy_food/buy_food_screen.dart';
+import 'package:flutter_sale_application/detail_chat/detail_chat_screen.dart';
 import 'package:flutter_sale_application/edit_cart/edit_cart.dart';
 import 'package:flutter_sale_application/edit_item/edit_item_screen.dart';
 import 'package:flutter_sale_application/food/detail_food.dart';
@@ -73,13 +74,13 @@ final GoRouter routerMyApp = GoRouter(
             entity: entity,
           );
         }),
-    GoRoute(
-        path: routerPathChatGroup,
-        name: routerNameChatGroup,
-        builder: (BuildContext context, GoRouterState state) {
-          final entity = (state.extra as Map<String, dynamic>?)?['entity'];
-          return ChatGroupScreen(entity: entity);
-        }),
+    // GoRoute(
+    //     path: routerPathChatGroup,
+    //     name: routerNameChatGroup,
+    //     builder: (BuildContext context, GoRouterState state) {
+    //       final entity = (state.extra as Map<String, dynamic>?)?['entity'];
+    //       return ChatGroupScreen(entity: entity);
+    //     }),
     GoRoute(
         path: routerPathGoogleMap,
         name: routerNameGoogleMap,
@@ -93,21 +94,32 @@ final GoRouter routerMyApp = GoRouter(
           final dataEntity = (state.extra as Map<String, dynamic>?);
           final entity = dataEntity?['entity'];
           final title = dataEntity?['title'];
-          final userEntity = dataEntity?['user'];
+          final userModel = dataEntity?['userModel'];
           return DetailFoodScreen(
             entity: entity,
             title: title ?? '',
-            userEntity: userEntity,
+            userModel: userModel,
+          );
+        }),
+    GoRoute(
+        path: routerPathDetailChat,
+        name: routerNameDetailChat,
+        builder: (BuildContext context, GoRouterState state) {
+          final dataEntity = (state.extra as Map<String, dynamic>?);
+          final modelSelected = dataEntity?['modelSelected'];
+          final userModel = dataEntity?['userModel'];
+          return DetailChatScreen(
+            userModel: userModel,
+            selectedModel: modelSelected,
           );
         }),
     GoRoute(
       path: routerPathHome,
       name: routerNameHome,
       builder: (BuildContext context, GoRouterState state) {
-        final userEntity =
-            (state.extra as Map<String, dynamic>?)?['userEntity'];
+        final userModel = (state.extra as Map<String, dynamic>?)?['userModel'];
         return HomeScreen(
-          userEntity: userEntity,
+          user: userModel,
         );
       },
     ),

@@ -59,6 +59,8 @@ dependencies:
   dash_chat_2:
   firebase_storage:
   cloud_firestore:
+  image_picker:
+  microphone:
 
 
 dev_dependencies:

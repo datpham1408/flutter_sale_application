@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -6,6 +6,7 @@ import 'package:flutter_sale_application/entity/user_entity.dart';
 import 'package:flutter_sale_application/login/login_cubit.dart';
 import 'package:flutter_sale_application/login/login_state.dart';
 import 'package:flutter_sale_application/main.dart';
+import 'package:flutter_sale_application/model/user_model.dart';
 import 'package:flutter_sale_application/resources/images.dart';
 import 'package:flutter_sale_application/resources/string.dart';
 import 'package:flutter_sale_application/resources/utils.dart';
@@ -26,6 +27,9 @@ class _LoginScreenState extends State<LoginScreen> {
       TextEditingController();
   final LoginCubit _loginCubit = getIt.get<LoginCubit>();
   bool isRememberLogin = false;
+  CollectionReference? collectionReference;
+  List<String> list = [];
+  UserModel? entity;
 
   @override
   void initState() {
@@ -53,6 +57,51 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       )),
     );
+  }
+
+  Future<void> getUser({String? passText, String? emailText}) async {
+    try {
+      var querySnapshot =
+          await FirebaseFirestore.instance.collection('user').get();
+
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> listData =
+          querySnapshot.docs;
+
+      for (int i = 0; i < listData.length; i++) {
+        Map<String, dynamic> data = listData[i].data();
+        String documentId = listData[i].id;
+
+        String password = data['password'];
+        String age = data['age'];
+        String userName = data['user_name'];
+        String phone = data['phone'];
+        String role = data['role'];
+        String idUser = data['id'];
+
+        var userModel = UserModel(
+            userName: userName,
+            phone: phone,
+            password: password,
+            age: age,
+            role: role,
+            id: documentId,
+            idUser: idUser);
+
+        if (password == passText && documentId == emailText) {
+          Utils.instance.showToast(thanhCong);
+          handleItemClickHome1(userModel: userModel);
+          break;
+        } else {
+          Utils.instance.showToast('That bai');
+        }
+      }
+      //
+      // for (var doc in querySnapshot.docs) {
+      //
+      // }
+    } catch (error) {
+      print('Lỗi khi lấy dữ liệu người dùng: $error');
+    }
   }
 
   Widget itemBody() {
@@ -145,17 +194,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget itemButton() {
     return ElevatedButton(
       onPressed: () {
-        _loginCubit.checkEmpty(
-            email: textEditingControllerEmail.text,
-            password: textEditingControllerPassword.text);
-        _loginCubit.checkedAllTextFlied(
-            email: textEditingControllerEmail.text,
-            password: textEditingControllerPassword.text);
-        _loginCubit.checkedLogin(
-          email: textEditingControllerEmail.text,
-          password: textEditingControllerPassword.text,
-          rememberMe: isRememberLogin,
-        );
+        // _loginCubit.checkedLogin(
+        //   email: textEditingControllerEmail.text,
+        //   password: textEditingControllerPassword.text,
+        //   rememberMe: isRememberLogin,
+        // );
+        getUser(
+            passText: textEditingControllerPassword.text,
+            emailText: textEditingControllerEmail.text);
       },
       child: const Text(login),
     );
@@ -194,9 +240,9 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     if (state is LoginSuccessState) {
-      var entity = state.userEntity;
-      handleItemClickHome(userEntity: entity);
-      // handleGoName();
+      entity = state.userModel;
+      Utils.instance.showToast(thanhCong);
+      handleItemClickHome1(userModel: entity);
       return;
     }
     if (state is LoginErrorState) {
@@ -204,28 +250,28 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     if (state is Authenticated) {
-      handleItemClickHome();
+      handleItemClickHome1(userModel: entity);
       return;
     }
-    if (state is LoginWithGoogleSuccessState) {
-      var user = state.user;
-      // handleItemClickHome(user: user);
-      return;
-    }
-    if (state is LoginWithGoogleErrorState) {
-      Utils.instance.showToast(userWithGoogle);
-      return;
-    }
+    // if (state is LoginWithGoogleSuccessState) {
+    //   var user = state.user;
+    //   // handleItemClickHome(user: user);
+    //   return;
+    // }
+    // if (state is LoginWithGoogleErrorState) {
+    //   Utils.instance.showToast(userWithGoogle);
+    //   return;
+    // }
   }
 
-  void handleItemClickHome({UserEntity? userEntity}) {
+  void handleItemClickHome1({UserModel? userModel}) {
     GoRouter.of(context).goNamed(
       routerNameHome,
-      extra: {'userEntity': userEntity},
+      extra: {'userModel': userModel},
     );
-
   }
-  void handleGoName(){
+
+  void handleGoName() {
     GoRouter.of(context).goNamed(routerNameHome);
   }
 }

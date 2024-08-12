@@ -6,8 +6,10 @@ import 'package:flutter_sale_application/resources/utils.dart';
 import 'package:flutter_sale_application/router/route_constant.dart';
 import 'package:go_router/go_router.dart';
 
+import '../model/user_model.dart';
+
 class MessageScreen extends StatefulWidget {
-  final UserEntity? entity;
+  final UserModel? entity;
 
   MessageScreen({super.key, required this.entity});
 
@@ -51,7 +53,6 @@ class _MessageScreenState extends State<MessageScreen> {
     try {
       await _remoteConfig.fetchAndActivate();
       var data = _remoteConfig.getAll();
-      var b = data;
     } catch (e) {
       print('loi :$e');
     }
@@ -70,18 +71,8 @@ class _MessageScreenState extends State<MessageScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Text(
-            //   'Splash Status: ${isSplashEnabled ? "Enabled" : "Disabled"}',
-            //   style: const TextStyle(fontSize: 20),
-            // ),
             Text('Date status : $value'),
             const SizedBox(height: 20),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     toggleSplashStatus(!isSplashEnabled);
-            //   },
-            //   child: Text(isSplashEnabled ? 'Disable Splash' : 'Enable Splash'),
-            // ),
             Utils.instance.sizeBoxHeight(20),
             ElevatedButton(
               onPressed: () {
@@ -101,13 +92,13 @@ class _MessageScreenState extends State<MessageScreen> {
     );
   }
 
-  void handleClickChat(UserEntity? entity) {
+  void handleClickChat(UserModel? entity) {
     GoRouter.of(context).pushNamed(
       routerNameChat,
       extra: {'entity': entity},
     );
   }
-  void handleClickChatGroup(UserEntity? entity) {
+  void handleClickChatGroup(UserModel? entity) {
     GoRouter.of(context).pushNamed(
       routerNameChatGroup,
       extra: {'entity': entity},

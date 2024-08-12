@@ -9,9 +9,11 @@ import 'package:flutter_sale_application/resources/string.dart';
 import 'package:flutter_sale_application/router/route_constant.dart';
 import 'package:go_router/go_router.dart';
 
+import '../model/user_model.dart';
+
 class ProfileScreen extends StatefulWidget {
-  final UserEntity? userEntity;
-  const ProfileScreen({super.key,required this.userEntity});
+  final UserModel? userModel;
+  const ProfileScreen({super.key,required this.userModel});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -41,7 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _profileCubit.getDataUser(widget.userEntity?.email);
+    // _profileCubit.getDataUser(widget.userModel?.id);
   }
 
   Widget itemBody() {
@@ -50,9 +52,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Container(
           child: Column(
             children: [
-              Text('Họ và Tên: ${userEntity.fullName}'),
-              Text('Chức vụ: ${userEntity.selected}'),
-              Text('Số điện thoại: ${userEntity.phone}'),
+              Text('Họ và Tên: ${widget.userModel?.userName}'),
+              Text('Chức vụ: ${widget.userModel?.role}'),
+              Text('Số điện thoại: ${widget.userModel?.phone}'),
             ],
           ),
         ),
@@ -79,9 +81,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (state is LogoutState) {
       handleItemClickLogout();
     }
-    if (state is GetUser) {
-      userEntity = state.entity;
-    }
+    // if (state is GetUser) {
+    //   userEntity = state.entity;
+    // }
   }
 
   void handleItemClickLogout() {

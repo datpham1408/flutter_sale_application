@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +8,8 @@ import 'package:flutter_sale_application/resources/hive_key.dart';
 import 'package:hive/hive.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../model/user_model.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit() : super(LoginState());
@@ -38,7 +41,7 @@ class LoginCubit extends Cubit<LoginState> {
           idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
 
       UserCredential userCredential =
-          await auth.signInWithCredential(credential);
+      await auth.signInWithCredential(credential);
       User? user = userCredential.user;
 
       if (user != null) {
@@ -73,37 +76,57 @@ class LoginCubit extends Cubit<LoginState> {
     required String password,
     bool? rememberMe = false,
   }) async {
-    final Box<UserEntity> box = await Hive.openBox<UserEntity>(HiveKey.user);
-    final UserEntity entity = box.values.firstWhere(
-        (UserEntity entity) =>
-            entity.email == email && entity.password == password,
-        orElse: () => UserEntity());
+    var querySnapshot = await FirebaseFirestore.instance.collection('user')
+        .get();
+    for (var doc in querySnapshot.docs) {
+      Map<String, dynamic> data = doc.data();
+      String documentId = doc.id;
 
-    if (entity.email?.isNotEmpty == true &&
-        entity.password?.isNotEmpty == true) {
-      if (rememberMe == true) {
-        await saveRememberMe(email);
+      String password = data['password'];
+      String age = data['age'];
+      String userName = data['user_name'];
+      String phone = data['phone'];
+      String role = data['role'];
+      String idUser = data['id'];
+
+      var userModel = UserModel(
+          userName: userName,
+          phone: phone,
+          password: password,
+          age: age,
+          role: role,
+          id: documentId,
+          idUser: idUser);
+
+
+      if (documentId.isNotEmpty == true &&
+          password.isNotEmpty == true) {
+        if (documentId == email && password == password) {
+          if (rememberMe == true) {
+            await saveRememberMe(email);
+          }
+          emit(LoginSuccessState(userModel: userModel));
+        }
+      } else {
+        emit(LoginErrorState());
       }
-      emit(LoginSuccessState(userEntity: entity));
-    } else {
-      emit(LoginErrorState());
     }
   }
 
   Future<void> checkRememberMe() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     bool rememberMe = prefs.getBool('rememberMe') ?? false;
-    String email = prefs.getString('email') ?? '';
+    // String email = prefs.getString('email') ?? '';
 
     if (rememberMe) {
-      emit(Authenticated(email: email));
+      emit(Authenticated());
     }
   }
 
   Future<void> saveRememberMe(String email) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('rememberMe', true);
-    await prefs.setString('email', email);
+    // await prefs.setString('email', email);
   }
 
   void checkBox(bool? value) {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sale_application/buy_food/buy_food_cubit.dart';
 import 'package:flutter_sale_application/cart/cart_cubit.dart';
+import 'package:flutter_sale_application/detail_chat/detail_chat_cubit.dart';
 import 'package:flutter_sale_application/edit_cart/edit_cart_cubit.dart';
 import 'package:flutter_sale_application/edit_item/edit_item_cubit.dart';
 import 'package:flutter_sale_application/entity/cart_adapter.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_sale_application/home/sale_application_cubit.dart';
 import 'package:flutter_sale_application/login/login_cubit.dart';
 import 'package:flutter_sale_application/market/market_cubit.dart';
 import 'package:flutter_sale_application/profile/profile_cubit.dart';
+import 'package:flutter_sale_application/recent_conversation/recent_conversation_cubit.dart';
 import 'package:flutter_sale_application/router/my_application.dart';
 import 'package:flutter_sale_application/status/status_cubit.dart';
 
@@ -68,6 +70,10 @@ Future<void> initCubit() async {
   getIt.registerFactory<AddItemCubit>(() => AddItemCubit());
   getIt.registerFactory<ChatCubit>(() => ChatCubit());
   getIt.registerFactory<ChatGroupCubit>(() => ChatGroupCubit());
+  getIt.registerFactory<DetailChatCubit>(() => DetailChatCubit());
+
+  getIt.registerFactory<RecentConversationCubit>(
+      () => RecentConversationCubit());
 }
 
 Future<void> initHive() async {

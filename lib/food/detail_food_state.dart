@@ -20,8 +20,8 @@ class GetDataFood extends FoodState{
   GetDataFood({required this.entity});
 }
 
-class GetUser extends FoodState {
-  final UserEntity entity;
-
-  GetUser({required this.entity});
-}
+// class GetUser extends FoodState {
+//   final UserEntity entity;
+//
+//   GetUser({required this.entity});
+// }

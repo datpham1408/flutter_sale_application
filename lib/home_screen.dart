@@ -1,17 +1,18 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sale_application/cart/cart_screen.dart';
-import 'package:flutter_sale_application/entity/food_entity.dart';
 import 'package:flutter_sale_application/home/sale_application_home_screen.dart';
+import 'package:flutter_sale_application/home_chat_screen.dart';
 import 'package:flutter_sale_application/message/message_screen.dart';
+import 'package:flutter_sale_application/model/user_model.dart';
 import 'package:flutter_sale_application/profile/profile_screen.dart';
+import 'package:flutter_sale_application/recent_conversation/resent_conversation_screen.dart';
 
-import 'entity/user_entity.dart';
+import 'message/chat_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  final UserEntity userEntity;
+  final UserModel user;
 
-  const HomeScreen({super.key, required this.userEntity});
+  const HomeScreen({super.key, required this.user});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -42,11 +43,12 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // _user = widget.user;
     _screens.addAll([
-      SaleApplicationHomeScreen(userEntity: widget.userEntity),
+      SaleApplicationHomeScreen(userModel: widget.user),
       const CartScreen(),
-      MessageScreen(entity: widget.userEntity),
+      // ChatScreen(entity: widget.user),
+      HomeChatScreen(model: widget.user),
       ProfileScreen(
-        userEntity: widget.userEntity,
+        userModel: widget.user,
       ),
     ]);
   }

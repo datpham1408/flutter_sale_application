@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_sale_application/entity/user_entity.dart';
 import 'package:flutter_sale_application/main.dart';
-import 'package:flutter_sale_application/resources/string.dart';
+import 'package:flutter_sale_application/resources/utils.dart';
+import 'package:flutter_sale_application/router/route_constant.dart';
+import 'package:go_router/go_router.dart';
 
-import '../model/message_chat_model.dart';
+import '../model/user_model.dart';
 import 'chat_cubit.dart';
 import 'chat_state.dart';
 
 class ChatScreen extends StatefulWidget {
-  final UserEntity? entity;
+  final UserModel entity;
 
   const ChatScreen({super.key, required this.entity});
 
@@ -20,61 +19,19 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final TextEditingController _messageController = TextEditingController();
   final ChatCubit _chatCubit = getIt.get<ChatCubit>();
-  CollectionReference? _messagesRef;
-  final List<ChatMessage> _chatMessages = [];
-  UserEntity userEntity = UserEntity();
-  String time = '';
+
+  List<UserModel>? listUser;
 
   @override
   void initState() {
     super.initState();
-    _chatCubit.getUser(widget.entity?.email ?? '');
-
-    Firebase.initializeApp().then(
-      (firebaseApp) {
-        _messagesRef = FirebaseFirestore.instance.collection("message");
-        _messagesRef?.snapshots().listen(
-          (snapshot) {
-            for (var change in snapshot.docChanges) {
-              final chatMessage = ChatMessage.fromSnapshot(change.doc);
-              setState(() {
-                _chatMessages.add(chatMessage);
-              });
-            }
-          },
-        );
-      },
-    );
-  }
-
-  Future<void> _sendMessage(String message) async {
-    if (userEntity.selected == user) {
-      final chatMessage = ChatMessage(
-        message: message,
-        sender: user,
-        timestamp: DateTime.now(),
-      );
-
-      await _messagesRef?.add(chatMessage.toJson());
-      _messageController.clear();
-    }
-    if (userEntity.selected == store) {
-      final chatMessage = ChatMessage(
-          message: message, sender: store, timestamp: DateTime.now());
-
-      await _messagesRef?.add(chatMessage.toJson());
-      _messageController.clear();
-    }
+    _chatCubit.getListData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat Screen'),
-      ),
       body: BlocProvider<ChatCubit>(
         create: (_) => _chatCubit,
         child: BlocConsumer<ChatCubit, ChatState>(
@@ -90,86 +47,77 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget itemBody() {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            reverse: true,
-            itemCount: _chatMessages.length,
+    return listUser != null
+        ? ListView.builder(
+            itemCount: listUser?.length,
+            shrinkWrap: true,
             itemBuilder: (context, index) {
-              final chatMessage = _chatMessages[index];
-              final sender = chatMessage.sender;
-              _chatCubit.formatTime(chatMessage.timestamp);
-              if (sender == userEntity.selected) {
-                return Align(
-                  alignment: Alignment.centerRight,
-                  child: Column(
-                    children: [
-                      Text(time),
-                      Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: ListTile(
-                          title: Text(chatMessage.sender),
-                          subtitle: Text(chatMessage.message),
-                        ),
-                      ),
+              UserModel? userModel = listUser?[index];
 
-                    ],
-                  ),
-                );
-              } else {
-                return Align(
-                  alignment: Alignment.centerLeft,
-                  child: Column(
-                    children: [
-                      Text(time),
-                      Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: ListTile(
-                          title: Text(chatMessage.sender),
-                          subtitle: Text(chatMessage.message),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+              if (userModel?.id == widget.entity.id) {
+                return Container();
               }
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _messageController,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter a message',
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.send),
-                onPressed: () {
-                  _sendMessage(_messageController.text);
+              return GestureDetector(
+                onTap: (){
+                  handleItemClickDetail(userModel: widget.entity,selectedModel: userModel);
                 },
-              ),
-            ],
+                child: itemDetailBody(
+                  userName: userModel?.userName,
+                  email: userModel?.id,
+                ),
+              );
+            },
+          )
+        : Container();
+  }
+
+  Widget itemDetailBody({String? userName, String? email}) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.all(8),
+      child: Row(
+        children: [
+          Container(
+            height: 50,
+            width: 50,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(360), color: Colors.grey),
+            child: Center(child: Text(getLastInitial(userName ?? ''))),
           ),
-        ),
-      ],
+          Utils.instance.sizeBoxWidth(8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(userName ?? ''),
+              Text(email ?? ''),
+            ],
+          )
+        ],
+      ),
     );
+  }
+
+  String getLastInitial(String fullName) {
+    List<String> nameParts = fullName.trim().split(' ');
+
+    String lastName = nameParts.last;
+
+    return lastName[0];
   }
 
   void handleListener(ChatState state) {
     if (state is GetUser) {
-      userEntity = state.entity;
+      listUser = state.entity;
     }
-    if (state is ConvertTime) {
-      setState(() {
-        time = state.time;
-      });
-    }
+  }
+
+  void handleItemClickDetail({UserModel? userModel, UserModel? selectedModel}) {
+    GoRouter.of(context).pushNamed(
+      routerNameDetailChat,
+      extra: {
+        'userModel': userModel,
+        'modelSelected': selectedModel,
+      },
+    );
   }
 }

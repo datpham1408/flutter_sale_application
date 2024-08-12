@@ -9,13 +9,13 @@ import 'package:intl/intl.dart';
 class ChatGroupCubit extends Cubit<ChatGroupState>{
   ChatGroupCubit() : super(ChatGroupState());
 
-  Future<void> getUser(String email) async{
-    final Box<UserEntity> box = await Hive.openBox<UserEntity>(HiveKey.user);
-    final List<UserEntity> list = box.values.toList();
-    final UserEntity userEntity = list.firstWhere((element) => element.email == email);
-
-    emit(GetUser(entity: userEntity));
-  }
+  // Future<void> getUser(String email) async{
+  //   final Box<UserEntity> box = await Hive.openBox<UserEntity>(HiveKey.user);
+  //   final List<UserEntity> list = box.values.toList();
+  //   final UserEntity userEntity = list.firstWhere((element) => element.email == email);
+  //
+  //   emit(GetUser(entity: userEntity));
+  // }
 
   String formatTime(DateTime time) {
     String formattedTime = DateFormat('HH:mm').format(time);

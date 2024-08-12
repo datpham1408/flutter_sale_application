@@ -5,6 +5,7 @@ const String routerPathHome = '/home';
 const String routerPathAddItem = '/add_item';
 const String routerPathChat = '/chat';
 const String routerPathChatGroup = '/chat_group';
+const String routerPathDetailChat = '/detail_chat';
 
 const String routerPathFish = '/fish';
 const String routerPathMeat = '/meat';
@@ -26,6 +27,7 @@ const String routerNameHome = 'home';
 const String routerNameAddItem = 'add_item';
 const String routerNameChat = 'chat';
 const String routerNameChatGroup = 'chat_group';
+const String routerNameDetailChat = 'detail_chat';
 
 const String routerNameFish = 'fish';
 const String routerNameMeat = 'meat';

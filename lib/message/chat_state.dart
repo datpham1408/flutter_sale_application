@@ -1,13 +1,14 @@
-import 'package:flutter_sale_application/entity/user_entity.dart';
+import '../model/user_model.dart';
 
 class ChatState {}
 
-class GetUser extends ChatState{
-  final UserEntity entity;
+class GetUser extends ChatState {
+  final List<UserModel>? entity;
 
-  GetUser({required this.entity});
+  GetUser({this.entity});
 }
-class ConvertTime extends ChatState{
+
+class ConvertTime extends ChatState {
   final String time;
 
   ConvertTime({required this.time});

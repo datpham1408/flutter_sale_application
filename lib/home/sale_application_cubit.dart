@@ -18,15 +18,15 @@ class SaleApplicationCubit extends Cubit<SaleApplicationState> {
     emit(FoodLoadedState(entity: listEntityLoai, loai: fieldLoai));
   }
 
-  Future<void> getDataUser(String? email) async {
-    final Box<UserEntity> box = await Hive.openBox<UserEntity>(HiveKey.user);
-    final List<UserEntity> listEntity = box.values.toList();
-
-    final UserEntity userEntity =
-        listEntity.firstWhere((entity) => entity.email == email);
-
-    emit(GetUser(entity: userEntity));
-  }
+  // Future<void> getDataUser(String? email) async {
+  //   final Box<UserEntity> box = await Hive.openBox<UserEntity>(HiveKey.user);
+  //   final List<UserEntity> listEntity = box.values.toList();
+  //
+  //   final UserEntity userEntity =
+  //       listEntity.firstWhere((entity) => entity.email == email);
+  //
+  //   emit(GetUser(entity: userEntity));
+  // }
 
   Future<void> getMarketFood() async {
     final Box<MarketFoodEntity> box =

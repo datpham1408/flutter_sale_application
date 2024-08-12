@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -19,17 +20,17 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _textEditingControllerEmail =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _textEditingControllerName =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _textEditingControllerAge =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _textEditingControllerPass =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _textEditingControllerConfirmPass =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _textEditingControllerPhone =
-      TextEditingController();
+  TextEditingController();
   final RegisterCubit _registerCubit = getIt.get<RegisterCubit>();
   bool isCheck = false;
   bool isCheck1 = false;
@@ -40,18 +41,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return FlutterEasyLoading(
       child: Scaffold(
           body: SafeArea(
-        child: BlocProvider<RegisterCubit>(
-          create: (_) => _registerCubit,
-          child: BlocConsumer<RegisterCubit, RegisterState>(
-            listener: (_, RegisterState state) {
-              _handleListener(state);
-            },
-            builder: (_, RegisterState state) {
-              return SingleChildScrollView(child: itemBody());
-            },
-          ),
-        ),
-      )),
+            child: BlocProvider<RegisterCubit>(
+              create: (_) => _registerCubit,
+              child: BlocConsumer<RegisterCubit, RegisterState>(
+                listener: (_, RegisterState state) {
+                  _handleListener(state);
+                },
+                builder: (_, RegisterState state) {
+                  return SingleChildScrollView(child: itemBody());
+                },
+              ),
+            ),
+          )),
     );
   }
 
@@ -87,8 +88,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 BlocBuilder<RegisterCubit, RegisterState>(
                     buildWhen: (_, RegisterState state) {
-                  return state is CheckBoxState;
-                }, builder: (_, RegisterState state) {
+                      return state is CheckBoxState;
+                    }, builder: (_, RegisterState state) {
                   if (state is CheckBoxState) {
                     return itemCheckBox(state: state, text: user);
                   }
@@ -96,8 +97,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 }),
                 BlocBuilder<RegisterCubit, RegisterState>(
                     buildWhen: (_, RegisterState state) {
-                  return state is CheckBoxState1;
-                }, builder: (_, RegisterState state) {
+                      return state is CheckBoxState1;
+                    }, builder: (_, RegisterState state) {
                   if (state is CheckBoxState1) {
                     return itemCheckBox1(state: state, text: store);
                   }
@@ -129,26 +130,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget itemButton() {
     return ElevatedButton(
       onPressed: () {
-        _registerCubit.checkEmpty(
-            email: _textEditingControllerEmail.text,
-            yourName: _textEditingControllerName.text,
+        // _registerCubit.checkEmpty(
+        //     email: _textEditingControllerEmail.text,
+        //     yourName: _textEditingControllerName.text,
+        //     password: _textEditingControllerPass.text,
+        //     confirmPassword: _textEditingControllerConfirmPass.text,
+        //     phone: _textEditingControllerPhone.text,
+        //     age: _textEditingControllerAge.text);
+        // _registerCubit.checkedAllTextFlied(
+        //     email: _textEditingControllerEmail.text,
+        //     yourName: _textEditingControllerName.text,
+        //     password: _textEditingControllerPass.text,
+        //     confirmPassword: _textEditingControllerConfirmPass.text,
+        //     phone: _textEditingControllerPhone.text,
+        //     age: _textEditingControllerAge.text);
+        addUser(emailText: _textEditingControllerEmail.text,
+            fullName: _textEditingControllerName.text,
             password: _textEditingControllerPass.text,
-            confirmPassword: _textEditingControllerConfirmPass.text,
+            age: _textEditingControllerAge.text,
             phone: _textEditingControllerPhone.text,
-            age: _textEditingControllerAge.text);
-        _registerCubit.checkedAllTextFlied(
-            email: _textEditingControllerEmail.text,
-            yourName: _textEditingControllerName.text,
-            password: _textEditingControllerPass.text,
-            confirmPassword: _textEditingControllerConfirmPass.text,
-            phone: _textEditingControllerPhone.text,
-            age: _textEditingControllerAge.text);
+            role: value);
       },
       child: const Text(
         registerAccount,
         style: TextStyle(color: Colors.black),
       ),
     );
+  }
+
+  void addUser(
+      {String? emailText, String? fullName, String? password, String? age,
+        String? phone, String? role}) {
+    Map<String, dynamic> emailData = {
+      'user_name': fullName,
+      'password': password,
+      'age': age,
+      'phone': phone,
+      'role': role,
+    };
+
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(emailText)
+        .set(emailData)
+        .then((value) {
+      print('Thêm user thành công');
+      handleItemClickLogin();
+    }).catchError((error) {
+      print('Lỗi khi thêm user: $error');
+    });
   }
 
   Widget itemCheckBox({CheckBoxState? state, String? text}) {
@@ -181,10 +211,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget itemTextFlied(
-      {String text = '',
-      TextEditingController? textEditingController,
-      bool? obscureText}) {
+  Widget itemTextFlied({String text = '',
+    TextEditingController? textEditingController,
+    bool? obscureText}) {
     return Container(
       margin: const EdgeInsets.all(16),
       child: Column(
@@ -209,7 +238,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-
 
   void _handleListener(RegisterState state) {
     if (state is RegisterCheckIsEmptyEmail) {
