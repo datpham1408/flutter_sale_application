@@ -38,6 +38,7 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
   // String path = '';
   bool checkURL = false;
   List<File> imageFiles = [];
+  List<String> listUrl = [];
 
   @override
   void initState() {
@@ -161,7 +162,7 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
                     setState(() {
                       // imageFiles.add(File(pickedFile.path));
                       url = pickedFile.path;
-                      _chatCubit.uploadImageToFirebase(File(pickedFile.path));
+                      imageFiles.add(File(pickedFile.path));
                     });
                   }
                 },
@@ -172,66 +173,55 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
                   if (url.isNotEmpty &&
                       checkImage == true &&
                       _messageController.text.isEmpty) {
-                    _sendMessage(imageUrl: url);
-                    // for (var file in imageFiles) {
-                    //   // imageFile = file[i];
-                    //   _sendMessage(imageUrl: file.path);
-                    // }
-                    // imageFiles.clear();
+                    // _sendMessage(imageUrl: url);
+                    pushImageFirebaseStorage();
                   } else if (url.isEmpty &&
                       _messageController.text.isNotEmpty) {
                     _sendMessage(message: _messageController.text);
                   } else {
                     _sendMessage(
                         message: _messageController.text, imageUrl: url);
+                    url = '';
                   }
                 },
               ),
             ],
           ),
         ),
-        // if (imageFiles.isNotEmpty)
-        //   Container(
-        //     height: MediaQuery.of(context).size.height * 0.2,
-        //     child: ListView.builder(
-        //       itemCount: imageFiles.length,
-        //       shrinkWrap: true,
-        //       scrollDirection: Axis.horizontal,
-        //       itemBuilder: (context, index) {
-        //         return SizedBox(
-        //           height: 50,
-        //           width: 100,
-        //           child: Stack(
-        //             children: [
-        //               Image.file(
-        //                 imageFiles[index],
-        //                 width: 100,
-        //                 height: 50,
-        //               ),
-        //               Align(
-        //                 alignment: Alignment.topRight,
-        //                 child: GestureDetector(
-        //                   onTap: () {
-        //                     setState(() {
-        //                       imageFiles.removeAt(index);
-        //                     });
-        //                   },
-        //                   child: Icon(Icons.close),
-        //                 ),
-        //               ),
-        //             ],
-        //           ),
-        //         );
-        //       },
-        //     ),
-        //   )
-        // else
-        //   Container()
-        if (url.isNotEmpty && checkImage == true)
-          Image.network(
-            url,
-            width: 100,
-            height: 50,
+        if (imageFiles.isNotEmpty)
+          Container(
+            height: MediaQuery.of(context).size.height * 0.2,
+            child: ListView.builder(
+              itemCount: imageFiles.length,
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                return SizedBox(
+                  height: 50,
+                  width: 100,
+                  child: Stack(
+                    children: [
+                      Image.file(
+                        imageFiles[index],
+                        width: 100,
+                        height: 50,
+                      ),
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              imageFiles.removeAt(index);
+                            });
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           )
         else
           Container()
@@ -239,19 +229,36 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
     );
   }
 
+  void pushImageFirebaseStorage() {
+    for (var url in listUrl) {
+      _sendMessage(imageUrl: url);
+    }
+    listUrl.clear();
+  }
+
   Widget _buildChatMessageWidget(ChatMessage chatMessage) {
-    if (chatMessage.imageUrl.isNotEmpty &&
-        checkURL == true &&
-        chatMessage.message.isEmpty) {
-      return Container(
-        padding: EdgeInsets.all(8),
-        margin: EdgeInsets.symmetric(vertical: 8),
-        child: Image.network(
-          chatMessage.imageUrl,
-          height: 50,
-          width: 100,
-        ),
-      );
+    if (chatMessage.imageUrl.isNotEmpty && chatMessage.message.isEmpty) {
+      if (Uri.parse(chatMessage.imageUrl).isAbsolute) {
+        return Container(
+          padding: EdgeInsets.all(8),
+          margin: EdgeInsets.symmetric(vertical: 8),
+          child: Image.network(
+            chatMessage.imageUrl,
+            height: 50,
+            width: 100,
+          ),
+        );
+      } else {
+        return Container(
+          padding: EdgeInsets.all(8),
+          margin: EdgeInsets.symmetric(vertical: 8),
+          child: Image.file(
+            File(chatMessage.imageUrl),
+            height: 50,
+            width: 100,
+          ),
+        );
+      }
     } else if (chatMessage.imageUrl.isEmpty && chatMessage.message.isNotEmpty) {
       return SizedBox(
         width: MediaQuery.of(context).size.width * 0.6,
@@ -364,6 +371,12 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
         });
         _messageController.clear();
 
+        if (imageUrl != null) {
+          for (int i = 0; i < imageFiles.length; i++) {
+            _chatCubit.uploadImageToFirebase(imageFiles[i]);
+          }
+        }
+
         _chatCubit.updateChatMessages(_chatMessages);
 
         sortMessagesByTimestamp();
@@ -390,7 +403,9 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
     }
 
     if (state is FireStorage) {
+      imageFiles.clear();
       url = state.url;
+      listUrl.add(url);
     }
   }
 }
