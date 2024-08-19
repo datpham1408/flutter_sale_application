@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatMessage {
   String message;
-  String imageUrl;
+  List<String> imageUrl;
   final String sender;
   final DateTime timestamp;
 
@@ -18,13 +18,14 @@ class ChatMessage {
       'message': message,
       'sender': sender,
       'timestamp': timestamp,
-      'imageUrl' : imageUrl
+      'imageUrl': imageUrl
     };
   }
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
+    List<String> stringData = parseDynamicToString(json['imageUrl'] as List<dynamic>);
     return ChatMessage(
-      imageUrl: json['imageUrl'] as String,
+      imageUrl: stringData,
       message: json['message'] as String,
       sender: json['sender'] as String,
       timestamp: (json['timestamp'] as Timestamp).toDate(),
@@ -50,4 +51,8 @@ class ChatMessage {
 //   timestamp: timestamp,
 // );
 // }
+}
+
+List<String> parseDynamicToString(List<dynamic> json) {
+  return json.map((item) => item.toString()).toList();
 }

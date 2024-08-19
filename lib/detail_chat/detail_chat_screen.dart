@@ -75,7 +75,7 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
 
   Widget itemBody() {
     listChatMessageReverse = _chatMessages.reversed.toList();
-    var checkImage = Uri.parse(url).isAbsolute;
+    // var checkImage = Uri.parse(url).isAbsolute;
     return Column(
       children: [
         Expanded(
@@ -87,14 +87,18 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
               final chatMessage = listChatMessageReverse[index];
               final sender = chatMessage.sender;
               final timestamp = chatMessage.timestamp;
-              if (chatMessage.imageUrl.isNotEmpty) {
-                checkURL = Uri.parse(chatMessage.imageUrl).isAbsolute;
+              final listImage = chatMessage.imageUrl;
+              bool checkURL = false;
+
+              if (listImage.isNotEmpty && index < listImage.length) {
+                checkURL = Uri.parse(listImage[index]).isAbsolute;
               }
+
               if (sender == widget.userModel.idUser) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _buildChatMessageWidget(chatMessage),
+                    _buildChatMessageWidget(chatMessage, listImage),
                   ],
                 );
               } else {
@@ -103,11 +107,11 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (checkURL == true)
+                      if (checkURL)
                         Column(
                           children: [
                             Image.network(
-                              chatMessage.imageUrl,
+                              listImage[index],
                               height: 50,
                               width: 100,
                             ),
@@ -127,8 +131,9 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
                               children: [
                                 Text(chatMessage.message),
                                 Align(
-                                    alignment: Alignment.bottomLeft,
-                                    child: Text(_formatTime(timestamp)))
+                                  alignment: Alignment.bottomLeft,
+                                  child: Text(_formatTime(timestamp)),
+                                ),
                               ],
                             ),
                           ),
@@ -160,9 +165,9 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
                   );
                   if (pickedFile != null) {
                     setState(() {
-                      // imageFiles.add(File(pickedFile.path));
                       url = pickedFile.path;
                       imageFiles.add(File(pickedFile.path));
+                      listUrl.add(pickedFile.path);
                     });
                   }
                 },
@@ -170,18 +175,12 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
               IconButton(
                 icon: const Icon(Icons.send),
                 onPressed: () {
-                  if (url.isNotEmpty &&
-                      checkImage == true &&
-                      _messageController.text.isEmpty) {
-                    // _sendMessage(imageUrl: url);
+                  if (url.isNotEmpty && _messageController.text.isEmpty) {
                     pushImageFirebaseStorage();
-                  } else if (url.isEmpty &&
-                      _messageController.text.isNotEmpty) {
+                  } else if (url.isEmpty && _messageController.text.isNotEmpty) {
                     _sendMessage(message: _messageController.text);
                   } else {
-                    _sendMessage(
-                        message: _messageController.text, imageUrl: url);
-                    url = '';
+                    sendMessageAndImage();
                   }
                 },
               ),
@@ -230,35 +229,58 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
   }
 
   void pushImageFirebaseStorage() {
-    for (var url in listUrl) {
-      _sendMessage(imageUrl: url);
-    }
+    _sendMessage(imageUrl: listUrl);
     listUrl.clear();
   }
 
-  Widget _buildChatMessageWidget(ChatMessage chatMessage) {
+  void sendMessageAndImage() {
+    _sendMessage(message: _messageController.text, imageUrl: listUrl);
+    listUrl.clear();
+  }
+
+  Widget _buildChatMessageWidget(
+      ChatMessage chatMessage, List<String> listImageUrl) {
     if (chatMessage.imageUrl.isNotEmpty && chatMessage.message.isEmpty) {
-      if (Uri.parse(chatMessage.imageUrl).isAbsolute) {
-        return Container(
-          padding: EdgeInsets.all(8),
-          margin: EdgeInsets.symmetric(vertical: 8),
-          child: Image.network(
-            chatMessage.imageUrl,
-            height: 50,
-            width: 100,
-          ),
-        );
-      } else {
-        return Container(
-          padding: EdgeInsets.all(8),
-          margin: EdgeInsets.symmetric(vertical: 8),
-          child: Image.file(
-            File(chatMessage.imageUrl),
-            height: 50,
-            width: 100,
-          ),
-        );
-      }
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          color: Colors.lightBlueAccent.withOpacity(0.3),
+        ),
+        child: Column(
+          children: [
+            GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3),
+              itemCount: listImageUrl.length,
+              itemBuilder: (context, index) {
+                if (Uri.parse(listImageUrl[index]).isAbsolute) {
+                  return Image.network(
+                    listImageUrl[index],
+                    height: 50,
+                    width: 100,
+                  );
+                } else {
+                  return Image.file(
+                    File(listImageUrl[index]),
+                    height: 50,
+                    width: 100,
+                  );
+                }
+              },
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                _formatTime(chatMessage.timestamp),
+                style: TextStyle(fontSize: 12),
+              ),
+            ),
+          ],
+        ),
+      );
     } else if (chatMessage.imageUrl.isEmpty && chatMessage.message.isNotEmpty) {
       return SizedBox(
         width: MediaQuery.of(context).size.width * 0.6,
@@ -312,10 +334,26 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
                 style: TextStyle(fontSize: 16),
               ),
               Utils.instance.sizeBoxHeight(4),
-              Image.network(
-                chatMessage.imageUrl,
-                height: 50,
-                width: 100,
+              GridView.builder(
+                shrinkWrap: true,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3),
+                itemCount: listImageUrl.length,
+                itemBuilder: (context, index) {
+                  if (Uri.parse(listImageUrl[index]).isAbsolute) {
+                    return Image.network(
+                      listImageUrl[index],
+                      height: 50,
+                      width: 100,
+                    );
+                  } else {
+                    return Image.file(
+                      File(listImageUrl[index]),
+                      height: 50,
+                      width: 100,
+                    );
+                  }
+                },
               ),
               Utils.instance.sizeBoxHeight(8),
               Align(
@@ -353,11 +391,11 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
     }
   }
 
-  Future<void> _sendMessage({String? message, String? imageUrl}) async {
+  Future<void> _sendMessage({String? message, List<String>? imageUrl}) async {
     if (widget.userModel.idUser.isNotEmpty) {
       var chatMessage = ChatMessage(
         message: message ?? '',
-        imageUrl: imageUrl ?? '',
+        imageUrl: imageUrl ?? [],
         sender: widget.userModel.idUser,
         timestamp: DateTime.now(),
       );
@@ -403,9 +441,8 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
     }
 
     if (state is FireStorage) {
-      imageFiles.clear();
       url = state.url;
-      listUrl.add(url);
+      imageFiles.clear();
     }
   }
 }

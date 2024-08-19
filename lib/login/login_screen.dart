@@ -253,15 +253,6 @@ class _LoginScreenState extends State<LoginScreen> {
       handleItemClickHome1(userModel: entity);
       return;
     }
-    // if (state is LoginWithGoogleSuccessState) {
-    //   var user = state.user;
-    //   // handleItemClickHome(user: user);
-    //   return;
-    // }
-    // if (state is LoginWithGoogleErrorState) {
-    //   Utils.instance.showToast(userWithGoogle);
-    //   return;
-    // }
   }
 
   void handleItemClickHome1({UserModel? userModel}) {

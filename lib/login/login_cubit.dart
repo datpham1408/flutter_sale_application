@@ -2,10 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_sale_application/entity/user_entity.dart';
 import 'package:flutter_sale_application/login/login_state.dart';
-import 'package:flutter_sale_application/resources/hive_key.dart';
-import 'package:hive/hive.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,7 +38,7 @@ class LoginCubit extends Cubit<LoginState> {
           idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
 
       UserCredential userCredential =
-      await auth.signInWithCredential(credential);
+          await auth.signInWithCredential(credential);
       User? user = userCredential.user;
 
       if (user != null) {
@@ -76,8 +73,8 @@ class LoginCubit extends Cubit<LoginState> {
     required String password,
     bool? rememberMe = false,
   }) async {
-    var querySnapshot = await FirebaseFirestore.instance.collection('user')
-        .get();
+    var querySnapshot =
+        await FirebaseFirestore.instance.collection('user').get();
     for (var doc in querySnapshot.docs) {
       Map<String, dynamic> data = doc.data();
       String documentId = doc.id;
@@ -98,12 +95,10 @@ class LoginCubit extends Cubit<LoginState> {
           id: documentId,
           idUser: idUser);
 
-
-      if (documentId.isNotEmpty == true &&
-          password.isNotEmpty == true) {
+      if (documentId.isNotEmpty && password.isNotEmpty) {
         if (documentId == email && password == password) {
           if (rememberMe == true) {
-            await saveRememberMe(email);
+            await saveRememberMe(email, password);
           }
           emit(LoginSuccessState(userModel: userModel));
         }
@@ -116,17 +111,24 @@ class LoginCubit extends Cubit<LoginState> {
   Future<void> checkRememberMe() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     bool rememberMe = prefs.getBool('rememberMe') ?? false;
-    // String email = prefs.getString('email') ?? '';
+    String email = prefs.getString('email') ?? '';
+    String password = prefs.getString('password') ?? '';
 
     if (rememberMe) {
+      await checkedLogin(
+        email: email,
+        password: password,
+        rememberMe: true,
+      );
       emit(Authenticated());
     }
   }
 
-  Future<void> saveRememberMe(String email) async {
+  Future<void> saveRememberMe(String email, String pass) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('rememberMe', true);
-    // await prefs.setString('email', email);
+    await prefs.setString('email', email);
+    await prefs.setString('password', pass);
   }
 
   void checkBox(bool? value) {
